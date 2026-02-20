@@ -4,11 +4,6 @@ import math
 from opensimplex import OpenSimplex
 
 
-
-def get_random_value(x, y, randomNumber):
-    return ((math.sin(x * 12.9898 + y * 78.233 + randomNumber) * 43758.5453) % 1)
-
-
 class TerrainGenClass:
     def __init__(terrain, screen_width, screen_height):
         terrain.SCREEN_WIDTH = screen_width
@@ -44,10 +39,6 @@ class TerrainGenClass:
         tileY = (terrain.y + mousePos[1]) // terrain.TILE_SIZE
         if (tileX, tileY) in terrain.ModifiedTiles:
             return 
-        elif newTileType == "farmland":
-            terrain.ModifiedTiles[(tileX, tileY)] = terrain.assets.Blocks.EveryBlock["farmland"]
-            if (tileX, tileY) in terrain.SurfaceCache:
-                del terrain.SurfaceCache[(tileX, tileY)]
 
 
 
@@ -68,5 +59,7 @@ class TerrainGenClass:
                 tileColor = (terrain.NoiseMap.noise2(tileX * noiseScale, tileY * noiseScale) + 2) * 128
                 rgb = (tileColor, tileColor, tileColor)
 
+                pygame.draw.rect(screen, rgb, (0, 0, terrain.TILE_SIZE, terrain.TILE_SIZE))
+                tileSurface = (rgb, (0, 0, terrain.TILE_SIZE, terrain.TILE_SIZE))
+
                 terrain.SurfaceCache[(tileX, tileY)] = (tileSurface, drawX, drawY)
-                screen.blit(tileSurface, (drawX, drawY))
