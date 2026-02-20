@@ -1,6 +1,5 @@
 import pygame
 import random
-import math
 from opensimplex import OpenSimplex
 
 
@@ -8,7 +7,7 @@ class TerrainGenClass:
     def __init__(terrain, screen_width, screen_height):
         terrain.SCREEN_WIDTH = screen_width
         terrain.SCREEN_HEIGHT = screen_height
-        terrain.TILE_SIZE = 40
+        terrain.TILE_SIZE = 8
         terrain.PLAYER_SPEED = 10
         terrain.x, terrain.y = 0, 0
         terrain.NoiseMap = OpenSimplex(seed=random.randint(0, 1000000))
@@ -43,7 +42,7 @@ class TerrainGenClass:
 
 
     def draw_terrain(terrain, screen):
-        noiseScale = 0.05
+        noiseScale = 0.01
 
         startScreenX = int(terrain.x // terrain.TILE_SIZE)
         startScreenY = int(terrain.y // terrain.TILE_SIZE)
@@ -56,10 +55,13 @@ class TerrainGenClass:
                 drawX = tileX * terrain.TILE_SIZE - terrain.x
                 drawY = tileY * terrain.TILE_SIZE - terrain.y
 
-                tileColor = (terrain.NoiseMap.noise2(tileX * noiseScale, tileY * noiseScale) + 2) * 128
+                if (tileX, tileY) in terrain.SurfaceCache:
+                    pygame.draw.rect(screen, terrain.SurfaceCache[(tileX, tileY)], (drawX, drawY, terrain.TILE_SIZE, terrain.TILE_SIZE))
+                    continue
+
+
+                tileColor = (terrain.NoiseMap.noise2(tileX * noiseScale, tileY * noiseScale) + 1) * 128 -1
                 rgb = (tileColor, tileColor, tileColor)
 
-                pygame.draw.rect(screen, rgb, (0, 0, terrain.TILE_SIZE, terrain.TILE_SIZE))
-                tileSurface = (rgb, (0, 0, terrain.TILE_SIZE, terrain.TILE_SIZE))
-
-                terrain.SurfaceCache[(tileX, tileY)] = (tileSurface, drawX, drawY)
+                pygame.draw.rect(screen, rgb, (drawX, drawY, terrain.TILE_SIZE, terrain.TILE_SIZE))
+                terrain.SurfaceCache[(tileX, tileY)] = rgb

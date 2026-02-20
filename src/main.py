@@ -13,8 +13,8 @@ class GameClass:
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = self.screen.get_size()
         pygame.mouse.set_visible(False)
         
-        self.assets.load_cursor()
-        self.assets.load_heart()
+        """self.assets.load_cursor()
+        self.assets.load_heart()"""
 
         self.fps_font = pygame.font.SysFont("Arial", 24, bold=True)
         
@@ -22,8 +22,8 @@ class GameClass:
         pygame.display.set_caption("Gardening nightmares")
         self.running = True
         self.terrain = TerrainGenClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
-        self.player = PlayerClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
-        self.dayNightCycle = DayNightCycleClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
+        #self.player = PlayerClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
+        #self.dayNightCycle = DayNightCycleClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
         
 
     def update(self, dividedTime):
@@ -31,17 +31,8 @@ class GameClass:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: 
-                if self.inventory.hotbar[self.inventory.selectedHotbarSlot] == "hoe":
-                    self.terrain.modify_tile(pygame.mouse.get_pos(), "farmland")
-                elif self.inventory.hotbar[self.inventory.selectedHotbarSlot] == "sword" and self.player.swingCooldown == 0:
-                    self.player.isSwinging = True
-            elif event.type == pygame.TEXTINPUT:
-                self.inventory.select_hotbar_slot(event.text)
         
         self.terrain.move_player(pressed_keys)
-        self.enemy.update()
-        self.dayNightCycle.update(dividedTime)
         
 
     def draw(self):
@@ -49,17 +40,11 @@ class GameClass:
         
         # Entities
         self.terrain.draw_terrain(self.screen)
-        self.enemy.draw(self.screen)
-        self.player.draw_player(self.screen)
-        self.player.draw_held_tool(self.screen,self.inventory.EveryBlocks,
-                                   self.inventory.hotbar[self.inventory.selectedHotbarSlot])
         
         # UI 
-        self.dayNightCycle.draw(self.screen)
-        self.player.draw_player_info(self.screen,self.assets.heart,self.terrain)
         
         self.draw_fps()
-        self.draw_mouse()
+        #self.draw_mouse()
 
     def draw_fps(self):
         fps_val = int(self.clock.get_fps())
