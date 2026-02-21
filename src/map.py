@@ -12,7 +12,7 @@ class MapClass:
         map.coreX, map.coreY = 0, 0
         map.x = (map.coreX * map.TILE_SIZE) - (screen_width // 2) + (map.coreSize * map.TILE_SIZE // 2)
         map.y = (map.coreY * map.TILE_SIZE) - (screen_height // 2) + (map.coreSize * map.TILE_SIZE // 2)
-        map.coreTextFont = pygame.font.SysFont("Arial", 12, bold=True)
+        map.update_font_size()
         
         map.ColorPatches = {}
         map.colorSpacing = 100
@@ -24,6 +24,10 @@ class MapClass:
         map.currentInteractionMode = "Moving" # Or "Building"
         map.isCurrentlyDraging = False
         map.mousePositionOnLastFrame = (0, 0)
+
+    def update_font_size(map):
+        fontSize = int(map.TILE_SIZE * 0.8)
+        map.coreTextFont = pygame.font.SysFont("Consolas", fontSize, bold=True)
 
     def compute_ressources_position(map, amountPerColor):
         map.Colors = [(255, 60, 60), # Red
@@ -80,6 +84,11 @@ class MapClass:
             pygame.draw.rect(screen, (220, 220, 230), 
                              (coreDrawX + padding, coreDrawY + padding, 
                               corePixelSize - (padding * 2), corePixelSize - (padding * 2)))
+            levelText = map.coreTextFont.render("Level 1", True, (10, 10, 10))
+
+            textRect = levelText.get_rect(center=(coreDrawX + corePixelSize // 2, coreDrawY + corePixelSize // 2))
+            
+            screen.blit(levelText, textRect)
 
 
     def draw_map(map, screen):

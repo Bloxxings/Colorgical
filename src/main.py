@@ -1,7 +1,5 @@
 import pygame  # python -m pip install pygame-ce
-from player import PlayerClass
 from map import MapClass
-from cycle import DayNightCycleClass
 
 class GameClass:
     def __init__(self):
@@ -15,7 +13,7 @@ class GameClass:
         """self.assets.load_cursor()
         self.assets.load_heart()"""
 
-        self.font = pygame.font.SysFont("Arial", 24, bold=True)
+        self.font = pygame.font.SysFont("Consolas", 24, bold=True)
         
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Gardening nightmares")
@@ -40,8 +38,10 @@ class GameClass:
 
                 if event.button == 4 and self.map.TILE_SIZE < 64: # Scroll up
                     self.map.TILE_SIZE += 4
+                    self.map.update_font_size()
                 if event.button == 5 and self.map.TILE_SIZE > 12: # Scroll down
                     self.map.TILE_SIZE -= 4
+                    self.map.update_font_size()
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -90,4 +90,4 @@ while game.running:
     game.draw()
     pygame.display.flip()
 
-pygame.quit()   
+pygame.quit()
