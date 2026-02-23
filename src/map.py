@@ -132,7 +132,7 @@ class MapClass:
                 if (tileX, tileY) in map.SurfaceCache:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
                     if buildingType == "Pipe":
-                        map.pipes.draw_pipe_logic(drawX, drawY, tileX, tileY, screen)
+                        map.pipes.draw_pipe_logic(drawX, drawY, tileX, tileY, screen, map.SurfaceCache, map.TILE_SIZE)
 
                     elif buildingType == "Miner":
                         centerX = drawX + map.TILE_SIZE // 2
@@ -145,6 +145,8 @@ class MapClass:
                    map.coreY <= mouseTileY < (map.coreY + map.coreSize)
         
         if map.placeBuilding:
+            direction = "right"
+            
             pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
             if not isInCore:
                 if hotbar[selectedSlot] == "Miner":
