@@ -27,6 +27,9 @@ class MapClass:
         map.placeBuilding = False
 
         map.pipes = PipesClass()
+        map.direction = "Right"
+
+        map.arrowSprite = pygame.image.load("assets/arrow.png")
 
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
@@ -78,11 +81,6 @@ class MapClass:
             map.x, map.y = round(map.x), round(map.y)
 
 
-
-    
-
-
-
     def draw_core(map, screen):
         coreDrawX = (map.coreX * map.TILE_SIZE) - map.x
         coreDrawY = (map.coreY * map.TILE_SIZE) - map.y
@@ -101,6 +99,13 @@ class MapClass:
                                                   coreDrawY + corePixelSize // 2 +  1.75 * map.TILE_SIZE))
             
             screen.blit(levelText, textRect)
+
+
+    def draw_arrow(map, screen, drawX, drawY, direction):
+        directions = {"Right":0, "Up":1, "Left":2, "Down":3}
+        arrow = pygame.transform.scale(map.arrowSprite, (map.TILE_SIZE, map.TILE_SIZE))
+        arrow = pygame.transform.rotate(arrow, 90*directions[direction])
+        screen.blit(arrow, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE))
 
 
     def draw_map(map, screen, selectedSlot,hotbar):
@@ -145,7 +150,7 @@ class MapClass:
                    map.coreY <= mouseTileY < (map.coreY + map.coreSize)
         
         if map.placeBuilding:
-            direction = "right"
+            map.direction = "Right"
             
             pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
             if not isInCore:
@@ -172,3 +177,5 @@ class MapClass:
             screen.blit(buildingOverlaySurface, (buildingOverlayX, buildingOverlayY))
             pygame.draw.rect(screen, overlayColor,
                              (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
+            
+            map.draw_arrow(screen, drawX, drawY, map.direction)
