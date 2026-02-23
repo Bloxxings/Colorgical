@@ -74,6 +74,26 @@ class MapClass:
                 
             map.x, map.y = round(map.x), round(map.y)
 
+
+
+    def draw_pipe_logic(map, drawX, drawY, tileX, tileY, screen):
+        pipeSize = map.TILE_SIZE//3
+        offset = (map.TILE_SIZE - pipeSize) // 2
+        pygame.draw.rect(screen, (40, 40, 45), (drawX + offset, drawY + offset, pipeSize, pipeSize))
+
+        Neighbours = {
+        (tileX, tileY - 1): (offset, 0, pipeSize, offset),                  # Up
+        (tileX, tileY + 1): (offset, offset + pipeSize, pipeSize, offset),  # Down
+        (tileX - 1, tileY): (0, offset, offset, pipeSize),                  # Left
+        (tileX + 1, tileY): (offset + pipeSize, offset, offset, pipeSize)   # Right
+    }
+
+        for coordinates, rectangle in Neighbours.items():
+            if map.SurfaceCache.get(coordinates) == "Pipe":
+                pygame.draw.rect(screen, (40, 40, 45), (drawX + rectangle[0], drawY + rectangle[1], rectangle[2], rectangle[3]))
+
+
+
     def draw_core(map, screen):
         coreDrawX = (map.coreX * map.TILE_SIZE) - map.x
         coreDrawY = (map.coreY * map.TILE_SIZE) - map.y
@@ -121,17 +141,20 @@ class MapClass:
                 pygame.draw.rect(screen, outlineColor, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE), 1)
 
                 if (tileX, tileY) in map.SurfaceCache:
-                    # buildingType = map.SurfaceCache[(tileX, tileY)] for later
-                    centerX = drawX + map.TILE_SIZE // 2
-                    centerY = drawY + map.TILE_SIZE // 2
-                    pygame.draw.circle(screen, (255, 50, 255), (centerX, centerY), map.TILE_SIZE // 3)
+                    buildingType = map.SurfaceCache[(tileX, tileY)]
+                    if buildingType == "Pipe":
+                        map.draw_pipe_logic(drawX, drawY, tileX, tileY, screen)
+                    elif buildingType == "placeholder":
+                        centerX = drawX + map.TILE_SIZE // 2
+                        centerY = drawY + map.TILE_SIZE // 2
+                        pygame.draw.circle(screen, (255, 50, 255), (centerX, centerY), map.TILE_SIZE // 3)
 
         map.draw_core(screen)
 
 
         if map.placeBuilding:
             pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
-            map.SurfaceCache[(mouseTileX, mouseTileY)] = "Pipe" if selectedSlot == 1 else "placeholder"
+            map.SurfaceCache[(mouseTileX, mouseTileY)] = "Pipe" if selectedSlot == 0 else "placeholder"
 
         if selectedSlot is not None:
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
