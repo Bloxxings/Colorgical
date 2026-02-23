@@ -38,7 +38,8 @@ class GameClass:
                         self.map.isCurrentlyDraging = True
                         self.map.mousePositionOnLastFrame = mousePosition
                     elif self.buildings.currentInteractionMode == "Building":
-                        pass
+                        self.map.placeBuilding = True
+
 
                 if event.button == 4 and self.map.TILE_SIZE < 64: # Scroll up
                     self.map.TILE_SIZE += 4
@@ -82,7 +83,10 @@ class GameClass:
         # Draw coordinates
         x = self.map.x // self.map.TILE_SIZE
         y =self.map.y // self.map.TILE_SIZE
-        coordinatesText = self.font.render(f"X:{pygame.mouse.get_pos()[0] if self.coordsMouseMode else x} Y:{pygame.mouse.get_pos()[1] if self.coordsMouseMode else y}",True,(225,225,225), (20, 20, 20))
+        coordinatesText = self.font.render(f"X:{pygame.mouse.get_pos()[0] if self.coordsMouseMode else \
+                                          x} Y:{pygame.mouse.get_pos()[1] if self.coordsMouseMode else y}",
+                                          True,(225,225,225), (20, 20, 20))
+        
         self.screen.blit(coordinatesText,(20, 70))
         mode = "Mouse coordinates" if self.coordsMouseMode else "Map coordinates"
         modeText = self.font.render(mode,True,(252, 215, 180))

@@ -28,7 +28,8 @@ class BuildingsClass:
         y = screen.get_height() - self.SLOT_SIZE - 30
 
         backgroundPadding = 10
-        backgroundRect = pygame.Rect(startX - backgroundPadding, y - backgroundPadding, totalWidth + (backgroundPadding * 2), self.SLOT_SIZE + backgroundPadding + 40)
+        backgroundRect = pygame.Rect(startX - backgroundPadding, y - backgroundPadding,
+                                     totalWidth + (backgroundPadding * 2), self.SLOT_SIZE + backgroundPadding + 40)
         leftTriangle = [(backgroundRect.left - 40, screen.get_height()), 
                      (backgroundRect.left, backgroundRect.top), 
                      (backgroundRect.left, screen.get_height())]

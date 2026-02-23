@@ -23,6 +23,7 @@ class MapClass:
 
         map.isCurrentlyDraging = False
         map.mousePositionOnLastFrame = (0, 0)
+        map.placeBuilding = False
 
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
@@ -64,12 +65,6 @@ class MapClass:
                 map.y += map.PLAYER_SPEED * nerf * (2 if keys[pygame.K_LSHIFT] else 1)
                 
             map.x, map.y = round(map.x), round(map.y)
-
-    def modify_tile(map, mousePosition, newTileType):
-        tileX = (map.x + mousePosition[0]) // map.TILE_SIZE
-        tileY = (map.y + mousePosition[1]) // map.TILE_SIZE
-        if (tileX, tileY) in map.ModifiedTiles:
-            return 
 
     def draw_core(map, screen):
         coreDrawX = (map.coreX * map.TILE_SIZE) - map.x
@@ -117,7 +112,19 @@ class MapClass:
                 pygame.draw.rect(screen, tileColor, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE))
                 pygame.draw.rect(screen, outlineColor, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE), 1)
 
+                if (tileX, tileY) in map.SurfaceCache:
+                    # buildingType = map.SurfaceCache[(tileX, tileY)] for later
+                    centerX = drawX + map.TILE_SIZE // 2
+                    centerY = drawY + map.TILE_SIZE // 2
+                    pygame.draw.circle(screen, (255, 50, 255), (centerX, centerY), map.TILE_SIZE // 3)
+
         map.draw_core(screen)
+
+
+        if map.placeBuilding:
+            pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
+            map.SurfaceCache[(mouseTileX, mouseTileY)] = map.Colors[0]
+        map.placeBuilding = False
 
         if selectedSlot is not None:
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
@@ -126,12 +133,13 @@ class MapClass:
             buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE))
             buildingOverlaySurface.set_alpha(120)
 
-# Essentially just coreX < mouseX      < endCoreX                   and coreY     < mouseY      < endCoreY
-            if map.coreX <= mouseTileX < (map.coreX + map.coreSize) and map.coreY <= mouseTileY < (map.coreY + map.coreSize): # if building overlay is touching the core draw a red rectangle
+            if map.coreX <= mouseTileX < (map.coreX + map.coreSize) and \
+            map.coreY <= mouseTileY < (map.coreY + map.coreSize): # if building overlay is touching the core draw a red rectangle
                 overlayColor = (255, 50, 50)
             else:
                 overlayColor = (255, 255, 255)
 
             buildingOverlaySurface.fill(overlayColor)
             screen.blit(buildingOverlaySurface, (buildingOverlayX, buildingOverlayY))
-            pygame.draw.rect(screen, overlayColor, (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
+            pygame.draw.rect(screen, overlayColor,
+                             (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
