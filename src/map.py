@@ -27,6 +27,9 @@ class MapClass:
         map.placeBuilding = False
 
         map.pipes = PipesClass()
+        map.direction = "Right"
+
+        map.arrowSprite = pygame.image.load("assets/arrow.png")
 
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
@@ -98,6 +101,13 @@ class MapClass:
             screen.blit(levelText, textRect)
 
 
+    def draw_arrow(map, screen, drawX, drawY, direction):
+        directions = {"Right":0, "Up":1, "Left":2, "Down":3}
+        arrow = pygame.transform.scale(map.arrowSprite, (map.TILE_SIZE, map.TILE_SIZE))
+        arrow = pygame.transform.rotate(arrow, 90*directions[direction])
+        screen.blit(arrow, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE))
+
+
     def draw_map(map, screen, selectedSlot,hotbar):
         startScreenX = int(map.x // map.TILE_SIZE)
         startScreenY = int(map.y // map.TILE_SIZE)
@@ -140,7 +150,7 @@ class MapClass:
                    map.coreY <= mouseTileY < (map.coreY + map.coreSize)
         
         if map.placeBuilding:
-            direction = "right"
+            map.direction = "Right"
             
             
             if not isInCore:
@@ -168,6 +178,7 @@ class MapClass:
             pygame.draw.rect(screen, overlayColor,
                              (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
             
+            map.draw_arrow(screen, drawX, drawY, map.direction)
 
 
 
