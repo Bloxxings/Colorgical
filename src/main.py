@@ -89,8 +89,8 @@ class GameClass:
         
     def draw_coords(self):
         # Draw coordinates
-        x = self.map.x // self.map.TILE_SIZE
-        y =self.map.y // self.map.TILE_SIZE
+        x = (self.map.x + self.SCREEN_WIDTH//2) // self.map.TILE_SIZE
+        y = (self.map.y + self.SCREEN_HEIGHT//2) // self.map.TILE_SIZE
         coordinatesText = self.font.render(f"X:{pygame.mouse.get_pos()[0] if self.coordsMouseMode else \
                                           x} Y:{pygame.mouse.get_pos()[1] if self.coordsMouseMode else y}",
                                           True,(225,225,225), (20, 20, 20))

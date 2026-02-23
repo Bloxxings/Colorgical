@@ -9,7 +9,7 @@ class MapClass:
         map.PLAYER_SPEED = 10
 
         map.coreSize = 5
-        map.coreX, map.coreY = 0, 0
+        map.coreX, map.coreY = -2.5, -2.5
         map.x = (map.coreX * map.TILE_SIZE) - (screen_width // 2) + (map.coreSize * map.TILE_SIZE // 2)
         map.y = (map.coreY * map.TILE_SIZE) - (screen_height // 2) + (map.coreSize * map.TILE_SIZE // 2)
         map.update_font_size()
