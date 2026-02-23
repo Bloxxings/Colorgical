@@ -147,7 +147,7 @@ class MapClass:
         if map.placeBuilding:
             direction = "right"
             
-            pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
+            
             if not isInCore:
                 if hotbar[selectedSlot] == "Miner":
                     if (mouseTileX, mouseTileY) in map.ColorPatches:
