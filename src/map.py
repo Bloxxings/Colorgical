@@ -8,8 +8,8 @@ class MapClass:
         map.TILE_SIZE = 40
         map.PLAYER_SPEED = 10
 
-        map.coreSize = 5
-        map.coreX, map.coreY = -2.5, -2.5
+        map.coreSize = 6
+        map.coreX, map.coreY = -3 , -3
         map.x = (map.coreX * map.TILE_SIZE) - (screen_width // 2) + (map.coreSize * map.TILE_SIZE // 2)
         map.y = (map.coreY * map.TILE_SIZE) - (screen_height // 2) + (map.coreSize * map.TILE_SIZE // 2)
         map.update_font_size()
@@ -114,7 +114,7 @@ class MapClass:
             screen.blit(levelText, textRect)
 
 
-    def draw_map(map, screen, selectedSlot):
+    def draw_map(map, screen, selectedSlot,hotbar):
         startScreenX = int(map.x // map.TILE_SIZE)
         startScreenY = int(map.y // map.TILE_SIZE)
         endScreenX = int((map.x + map.SCREEN_WIDTH) // map.TILE_SIZE) + 2
@@ -145,10 +145,10 @@ class MapClass:
                     if buildingType == "Pipe":
                         map.draw_pipe_logic(drawX, drawY, tileX, tileY, screen)
 
-                    elif buildingType == "placeholder":
+                    elif buildingType == "Miner":
                         centerX = drawX + map.TILE_SIZE // 2
                         centerY = drawY + map.TILE_SIZE // 2
-                        pygame.draw.circle(screen, (255, 50, 255), (centerX, centerY), map.TILE_SIZE // 3)
+                        pygame.draw.circle(screen, (255, 127, 0), (centerX, centerY), map.TILE_SIZE // 3)
 
         map.draw_core(screen)
 
@@ -158,7 +158,11 @@ class MapClass:
         if map.placeBuilding:
             pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
             if not isInCore:
-                map.SurfaceCache[(mouseTileX, mouseTileY)] = "Pipe" if selectedSlot == 0 else "placeholder"
+                if hotbar[selectedSlot] == "Miner":
+                    if (mouseTileX, mouseTileY) in map.ColorPatches:
+                        map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
+                else:
+                    map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
 
         if selectedSlot is not None:
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
