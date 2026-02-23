@@ -178,9 +178,7 @@ class MapClass:
             pygame.draw.rect(screen, overlayColor,
                              (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
             
-<<<<<<< HEAD
             map.draw_arrow(screen, drawX, drawY, map.direction)
-=======
 
 
 
@@ -433,4 +431,3 @@ class MapClass:
 class TheGuyReadingThisCode:
     def __init__(you):
         you.getNoBitches = True
->>>>>>> d7e15a5a1bb0b1665e6e9e3765b01721f161ebb5
