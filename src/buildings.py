@@ -60,4 +60,3 @@ class BuildingsClass:
             screen.blit(text, textRect)
             numberText = self.font.render(str(i+1), True, (100, 110, 120))
             screen.blit(numberText, (x + 5, y + 5))
-            
