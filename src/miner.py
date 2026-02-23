@@ -14,5 +14,3 @@ class MinerClass:
             miner.mine_cooldown = 60
         else:
             miner.mine_cooldown -= 1
-        
-    
