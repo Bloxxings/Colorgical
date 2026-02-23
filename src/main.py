@@ -66,7 +66,7 @@ class GameClass:
 
     def draw(self):
         self.screen.fill((0, 0, 0))
-        self.map.draw_map(self.screen)
+        self.map.draw_map(self.screen, self.buildings.selectedSlot)
         
         # UI 
         self.draw_fps()

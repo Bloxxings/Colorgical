@@ -21,8 +21,6 @@ class BuildingsClass:
                         self.selectedSlot = index
                 
 
-                    
-
     def draw_building_bar(self, screen):
 
         totalWidth = len(self.hotbar) * self.SLOT_SIZE

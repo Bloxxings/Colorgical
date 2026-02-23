@@ -65,9 +65,9 @@ class MapClass:
                 
             map.x, map.y = round(map.x), round(map.y)
 
-    def modify_tile(map, mousePos, newTileType):
-        tileX = (map.x + mousePos[0]) // map.TILE_SIZE
-        tileY = (map.y + mousePos[1]) // map.TILE_SIZE
+    def modify_tile(map, mousePosition, newTileType):
+        tileX = (map.x + mousePosition[0]) // map.TILE_SIZE
+        tileY = (map.y + mousePosition[1]) // map.TILE_SIZE
         if (tileX, tileY) in map.ModifiedTiles:
             return 
 
@@ -91,18 +91,25 @@ class MapClass:
             screen.blit(levelText, textRect)
 
 
-    def draw_map(map, screen):
+    def draw_map(map, screen, selectedSlot):
         startScreenX = int(map.x // map.TILE_SIZE)
         startScreenY = int(map.y // map.TILE_SIZE)
         endScreenX = int((map.x + map.SCREEN_WIDTH) // map.TILE_SIZE) + 2
         endScreenY = int((map.y + map.SCREEN_HEIGHT) // map.TILE_SIZE) + 3
+
+        mousePosition = pygame.mouse.get_pos()
+        mouseTileX = (map.x + mousePosition[0]) // map.TILE_SIZE
+        mouseTileY = (map.y + mousePosition[1]) // map.TILE_SIZE
 
         for tileY in range(startScreenY, endScreenY):
             for tileX in range(startScreenX, endScreenX):
                 drawX = tileX * map.TILE_SIZE - map.x
                 drawY = tileY * map.TILE_SIZE - map.y
                 tileColor = (66, 67, 79)
-                outlineColor = (71, 72, 84)
+                if map.TILE_SIZE < 20:
+                    outlineColor = (68, 69, 81) # Barely visible against (66, 67, 79)
+                else:
+                    outlineColor = (71, 72, 84)
 
                 if (tileX, tileY) in map.ColorPatches:
                     tileColor = map.ColorPatches[(tileX, tileY)]
@@ -111,3 +118,14 @@ class MapClass:
                 pygame.draw.rect(screen, outlineColor, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE), 1)
 
         map.draw_core(screen)
+
+        if selectedSlot is not None:
+            buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
+            buildingOverlayY = mouseTileY * map.TILE_SIZE - map.y
+
+            buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE))
+            buildingOverlaySurface.set_alpha(120)
+            buildingOverlaySurface.fill((255, 255, 255))
+            screen.blit(buildingOverlaySurface, (buildingOverlayX, buildingOverlayY))
+            pygame.draw.rect(screen, (255, 255, 255), 
+                             (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
