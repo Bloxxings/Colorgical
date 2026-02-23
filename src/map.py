@@ -71,9 +71,8 @@ class MapClass:
         if (tileX, tileY) in map.ModifiedTiles:
             return 
 
-    def draw_core(map, screen):
-        coreDrawX = (map.coreX * map.TILE_SIZE) - map.x
-        coreDrawY = (map.coreY * map.TILE_SIZE) - map.y
+    def draw_core(map, screen, coreDrawX, coreDrawY):
+
         corePixelSize = map.coreSize * map.TILE_SIZE
 
         if (coreDrawX + corePixelSize > 0 and coreDrawX < map.SCREEN_WIDTH and 
@@ -107,7 +106,7 @@ class MapClass:
                 drawY = tileY * map.TILE_SIZE - map.y
                 tileColor = (66, 67, 79)
                 if map.TILE_SIZE < 20:
-                    outlineColor = (68, 69, 81) # Barely visible against (66, 67, 79)
+                    outlineColor = (68, 69, 81) # Barely visible against tileColor 
                 else:
                     outlineColor = (71, 72, 84)
 
@@ -117,7 +116,9 @@ class MapClass:
                 pygame.draw.rect(screen, tileColor, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE))
                 pygame.draw.rect(screen, outlineColor, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE), 1)
 
-        map.draw_core(screen)
+        coreDrawX = (map.coreX * map.TILE_SIZE) - map.x
+        coreDrawY = (map.coreY * map.TILE_SIZE) - map.y
+        map.draw_core(screen, coreDrawX, coreDrawY)
 
         if selectedSlot is not None:
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
@@ -125,7 +126,13 @@ class MapClass:
 
             buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE))
             buildingOverlaySurface.set_alpha(120)
-            buildingOverlaySurface.fill((255, 255, 255))
+            
+# Essentially just coreX < mouseX      < endCoreX                   and coreY     < mouseY      < endCoreY
+            if map.coreX <= mouseTileX < (map.coreX + map.coreSize) and map.coreY <= mouseTileY < (map.coreY + map.coreSize): # if building overlay is touching the core draw a red rectangle
+                overlayColor = (255, 50, 50)
+            else:
+                overlayColor = (255, 255, 255)
+
+            buildingOverlaySurface.fill(overlayColor)
             screen.blit(buildingOverlaySurface, (buildingOverlayX, buildingOverlayY))
-            pygame.draw.rect(screen, (255, 255, 255), 
-                             (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
+            pygame.draw.rect(screen, overlayColor, (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
