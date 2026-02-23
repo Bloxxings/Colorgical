@@ -144,6 +144,7 @@ class MapClass:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
                     if buildingType == "Pipe":
                         map.draw_pipe_logic(drawX, drawY, tileX, tileY, screen)
+
                     elif buildingType == "placeholder":
                         centerX = drawX + map.TILE_SIZE // 2
                         centerY = drawY + map.TILE_SIZE // 2
@@ -151,10 +152,13 @@ class MapClass:
 
         map.draw_core(screen)
 
-
+        isInCore = map.coreX <= mouseTileX < (map.coreX + map.coreSize) and \
+                   map.coreY <= mouseTileY < (map.coreY + map.coreSize)
+        
         if map.placeBuilding:
             pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
-            map.SurfaceCache[(mouseTileX, mouseTileY)] = "Pipe" if selectedSlot == 0 else "placeholder"
+            if not isInCore:
+                map.SurfaceCache[(mouseTileX, mouseTileY)] = "Pipe" if selectedSlot == 0 else "placeholder"
 
         if selectedSlot is not None:
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
@@ -163,8 +167,8 @@ class MapClass:
             buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE))
             buildingOverlaySurface.set_alpha(120)
 
-            if map.coreX <= mouseTileX < (map.coreX + map.coreSize) and \
-            map.coreY <= mouseTileY < (map.coreY + map.coreSize): # if building overlay is touching the core draw a red rectangle
+
+            if isInCore:
                 overlayColor = (255, 50, 50)
             else:
                 overlayColor = (255, 255, 255)

@@ -10,9 +10,6 @@ class GameClass:
 
         self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = self.screen.get_size()
-        
-        """self.assets.load_cursor()
-        self.assets.load_heart()"""
 
         self.font = pygame.font.SysFont("Consolas", 24, bold=True)
         
