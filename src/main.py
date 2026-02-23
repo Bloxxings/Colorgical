@@ -22,17 +22,19 @@ class GameClass:
         self.coordsMouseMode = False
         self.map = MapClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
         self.buildings = BuildingsClass()
+        self.isDeleting = False
         
 
-    def update(self, dividedTime):
+    def update(self):
         pressed_keys = pygame.key.get_pressed()
         mousePosition = pygame.mouse.get_pos()
         for event in pygame.event.get():
             self.buildings.handle_event(event)
+
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-                
                 if event.button == 1:
                     if self.buildings.currentInteractionMode == "Moving":
                         self.map.isCurrentlyDraging = True
@@ -40,6 +42,8 @@ class GameClass:
                     elif self.buildings.currentInteractionMode == "Building":
                         self.map.placeBuilding = True
 
+                if event.button == 3:
+                    self.isDeleting = True
 
                 if event.button == 4 and self.map.TILE_SIZE < 64: # Scroll up
                     self.map.TILE_SIZE += 4
@@ -51,6 +55,10 @@ class GameClass:
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     self.map.isCurrentlyDraging = False
+                    self.map.placeBuilding = False
+                if event.button == 3:
+                    self.isDeleting = False
+
             if event.type == pygame.MOUSEMOTION:
                 if self.map.isCurrentlyDraging and self.buildings.currentInteractionMode == "Moving":
                     mouseDifferenceX = mousePosition[0] - self.map.mousePositionOnLastFrame[0]
@@ -62,6 +70,9 @@ class GameClass:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
                     self.coordsMouseMode =  not self.coordsMouseMode
+
+        if self.isDeleting:
+            self.map.remove_building()
 
         self.map.move_player(pressed_keys)
 
@@ -96,9 +107,9 @@ class GameClass:
 game = GameClass()
 
 while game.running:
-    dividedTime = game.clock.tick(60) / 1000
-    game.update(dividedTime)
+    game.update()
     game.draw()
     pygame.display.flip()
+    game.clock.tick(60)
 
 pygame.quit()

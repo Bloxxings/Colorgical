@@ -5,7 +5,7 @@ class MapClass:
     def __init__(map, screen_width, screen_height):
         map.SCREEN_WIDTH = screen_width
         map.SCREEN_HEIGHT = screen_height
-        map.TILE_SIZE = 20
+        map.TILE_SIZE = 40
         map.PLAYER_SPEED = 10
 
         map.coreSize = 5
@@ -46,6 +46,14 @@ class MapClass:
                     for y in range(patchSizeHeight):
                         if random.random() > 0.1:
                             map.ColorPatches[(spawnX + x, spawnY + y)] = color
+
+    def remove_building(map):
+        mousePosition = pygame.mouse.get_pos()
+        mouseTileX = (map.x + mousePosition[0]) // map.TILE_SIZE
+        mouseTileY = (map.y + mousePosition[1]) // map.TILE_SIZE
+        mouseTile = (mouseTileX, mouseTileY)
+        if mouseTile in map.SurfaceCache:
+            del map.SurfaceCache[mouseTile]
 
     def move_player(map, keys):
         nerf = 1
@@ -123,8 +131,7 @@ class MapClass:
 
         if map.placeBuilding:
             pygame.draw.circle(screen, (255, 50, 255), (mouseTileX - map.TILE_SIZE//2, mouseTileY - map.TILE_SIZE//2), map.TILE_SIZE/2)
-            map.SurfaceCache[(mouseTileX, mouseTileY)] = map.Colors[0]
-        map.placeBuilding = False
+            map.SurfaceCache[(mouseTileX, mouseTileY)] = "Pipe" if selectedSlot == 1 else "placeholder"
 
         if selectedSlot is not None:
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
