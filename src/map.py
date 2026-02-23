@@ -1,5 +1,6 @@
 import pygame
 import random
+from pipes import PipesClass
 
 class MapClass:
     def __init__(map, screen_width, screen_height):
@@ -24,6 +25,8 @@ class MapClass:
         map.isCurrentlyDraging = False
         map.mousePositionOnLastFrame = (0, 0)
         map.placeBuilding = False
+
+        map.pipes = PipesClass()
 
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
@@ -76,21 +79,7 @@ class MapClass:
 
 
 
-    def draw_pipe_logic(map, drawX, drawY, tileX, tileY, screen):
-        pipeSize = map.TILE_SIZE//3
-        offset = (map.TILE_SIZE - pipeSize) // 2
-        pygame.draw.rect(screen, (40, 40, 45), (drawX + offset, drawY + offset, pipeSize, pipeSize))
-
-        Neighbours = {
-        (tileX, tileY - 1): (offset, 0, pipeSize, offset),                  # Up
-        (tileX, tileY + 1): (offset, offset + pipeSize, pipeSize, offset),  # Down
-        (tileX - 1, tileY): (0, offset, offset, pipeSize),                  # Left
-        (tileX + 1, tileY): (offset + pipeSize, offset, offset, pipeSize)   # Right
-    }
-
-        for coordinates, rectangle in Neighbours.items():
-            if map.SurfaceCache.get(coordinates) == "Pipe":
-                pygame.draw.rect(screen, (40, 40, 45), (drawX + rectangle[0], drawY + rectangle[1], rectangle[2], rectangle[3]))
+    
 
 
 
@@ -143,7 +132,7 @@ class MapClass:
                 if (tileX, tileY) in map.SurfaceCache:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
                     if buildingType == "Pipe":
-                        map.draw_pipe_logic(drawX, drawY, tileX, tileY, screen)
+                        map.pipes.draw_pipe_logic(drawX, drawY, tileX, tileY, screen)
 
                     elif buildingType == "placeholder":
                         centerX = drawX + map.TILE_SIZE // 2
