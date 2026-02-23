@@ -34,10 +34,10 @@ class GameClass:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 
                 if event.button == 1:
-                    if self.map.currentInteractionMode == "Moving":
+                    if self.buildings.currentInteractionMode == "Moving":
                         self.map.isCurrentlyDraging = True
                         self.map.mousePositionOnLastFrame = mousePosition
-                    elif self.map.currentInteractionMode == "Building":
+                    elif self.buildings.currentInteractionMode == "Building":
                         pass
 
                 if event.button == 4 and self.map.TILE_SIZE < 64: # Scroll up
@@ -51,7 +51,7 @@ class GameClass:
                 if event.button == 1:
                     self.map.isCurrentlyDraging = False
             if event.type == pygame.MOUSEMOTION:
-                if self.map.isCurrentlyDraging and self.map.currentInteractionMode == "Moving":
+                if self.map.isCurrentlyDraging and self.buildings.currentInteractionMode == "Moving":
                     mouseDifferenceX = mousePosition[0] - self.map.mousePositionOnLastFrame[0]
                     mouseDifferenceY = mousePosition[1] - self.map.mousePositionOnLastFrame[1]
                 
@@ -75,7 +75,7 @@ class GameClass:
 
     def draw_fps(self):
         fps_val = int(self.clock.get_fps())
-        fps_surface = self.font.render(f"FPS: {fps_val}", True, (255, 255, 255))
+        fps_surface = self.font.render(f"FPS: {self.buildings.currentInteractionMode}", True, (255, 255, 255))
         self.screen.blit(fps_surface, (20, 20))
         
     def draw_coords(self):

@@ -21,7 +21,6 @@ class MapClass:
         map.ModifiedTiles = {}
         map.SurfaceCache = {}
 
-        map.currentInteractionMode = "Moving" # Or "Building"
         map.isCurrentlyDraging = False
         map.mousePositionOnLastFrame = (0, 0)
 

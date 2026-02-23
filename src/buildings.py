@@ -3,16 +3,25 @@ import pygame
 class BuildingsClass:
     def __init__(self):
         self.hotbar = ["Pipe", "Miner", "Mixer", "Splitter", " Signal", "Wire", "Filter", "Tunnel", "Logic"]
-        self.selectedSlot = 0
+        self.selectedSlot = None
         self.SLOT_SIZE = 100
         self.font = pygame.font.SysFont("Consolas", 14, bold=True)
+        self.currentInteractionMode = "Moving" # Or "Building"
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if pygame.K_1 <= event.key <= pygame.K_9:
                 index = event.key - pygame.K_1
                 if index < len(self.hotbar):
-                    self.selectedSlot = index
+                    self.currentInteractionMode = "Building"
+                    if index == self.selectedSlot:
+                        self.currentInteractionMode = "Moving"
+                        self.selectedSlot = None
+                    else:
+                        self.selectedSlot = index
+                
+
+                    
 
     def draw_building_bar(self, screen):
 
@@ -39,7 +48,10 @@ class BuildingsClass:
         for i, item in enumerate(self.hotbar):
             x = startX + i * self.SLOT_SIZE
 
-            isSelected = (i == self.selectedSlot)
+            if self.currentInteractionMode == "Building":
+                isSelected = (i == self.selectedSlot)
+            else:
+                isSelected = False
             backgroundColor = (40, 44, 52) if not isSelected else (60, 70, 90)
 
             # Draw Slot
