@@ -75,7 +75,7 @@ class GameClass:
 
     def draw_fps(self):
         fps_val = int(self.clock.get_fps())
-        fps_surface = self.font.render(f"FPS: {self.buildings.currentInteractionMode}", True, (255, 255, 255))
+        fps_surface = self.font.render(f"FPS: {fps_val}", True, (255, 255, 255))
         self.screen.blit(fps_surface, (20, 20))
         
     def draw_coords(self):
