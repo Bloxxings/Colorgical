@@ -1,6 +1,65 @@
-import pygame, random
+import pygame
+import random
 
 
+class PipeClass:
+    def __init__(pipe, x, y, direction, Sprites):
+        pipe.x = x
+        pipe.y = y
+        pipe.direction = direction
+        pipe.Sprites = Sprites
+        pipe.startDirection = None
+        pipe.endDirection = direction
+        pipe.image = None
+
+        pipe.pick_asset({})
+
+    def locate_neighbour(pipe, allPipes):
+        Neighbours = {
+            "Up": (pipe.x, pipe.y - 1, "Down"),
+            "Down": (pipe.x, pipe.y + 1, "Up"),
+            "Left": (pipe.x - 1, pipe.y, "Right"),
+            "Right": (pipe.x + 1, pipe.y, "Left")
+        }
+        for side, (neighbourX, neighbourY, requiredDirection) in Neighbours.items():
+            neighbour = allPipes.get((neighbourX, neighbourY))
+            if neighbour and neighbour.direction == requiredDirection:
+                return side
+        return None
+        
+    def pick_asset(pipe, allPipes):
+        pipe.startDirection = pipe.locate_neighbour(allPipes)
+        binaryDirectioning = {
+            "Right": 1,
+            "Down": 2,
+            "Left": 4,
+            "Up": 8
+        }
+
+        tileID = binaryDirectioning.get(pipe.startDirection, 0) + \
+                 binaryDirectioning.get(pipe.endDirection, 0)
+        pipe.image = pipe.Sprites[tileID]
+
+    def draw_pipe(pipe, screen, cameraOffsetX, cameraOffsetY, TILE_SIZE):
+        drawX = pipe.x * TILE_SIZE - cameraOffsetX
+        drawY = pipe.y * TILE_SIZE - cameraOffsetY
+        screen.blit(pipe.image, (drawX, drawY))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 class PipeClass:
     def __init__(pipe,x,y,map):
         pipe.x = x
@@ -90,3 +149,4 @@ class PipeClass:
             pygame.draw.rect(screen, (40, 40, 45), (drawX + Neighbours[pipe.previous_direction][0], drawY + Neighbours[pipe.previous_direction][1], Neighbours[pipe.previous_direction][2], Neighbours[pipe.previous_direction][3]))
         if pipe.next_direction is not None:
             pygame.draw.rect(screen, (40, 40, 45), (drawX + Neighbours[pipe.next_direction][0], drawY + Neighbours[pipe.next_direction][1], Neighbours[pipe.next_direction][2], Neighbours[pipe.next_direction][3]))
+"""

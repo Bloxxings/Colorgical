@@ -26,10 +26,14 @@ class MapClass:
         map.mousePositionOnLastFrame = (0, 0)
         map.placeBuilding = False
 
-        map.pipes = {}
+        map.Pipes = {}
         map.direction = "Right"
 
         map.arrowSprite = pygame.image.load("assets/arrow.png")
+        map.PipeSprites = {}
+        for i in range(1, 25):
+            img = pygame.image.load(f"assets/pipes/pipe{i}.png").convert_alpha()
+            map.PipeSprites[i] = pygame.transform.scale(img, (map.TILE_SIZE, map.TILE_SIZE))
 
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
@@ -58,10 +62,15 @@ class MapClass:
         mouseTileX = (map.x + mousePosition[0]) // map.TILE_SIZE
         mouseTileY = (map.y + mousePosition[1]) // map.TILE_SIZE
         mouseTile = (mouseTileX, mouseTileY)
-        if mouseTile in map.SurfaceCache:
-            del map.SurfaceCache[mouseTile]
-        elif mouseTile in map.pipes:
-            del map.pipes[mouseTile]
+        if mouseTile in map.Pipes:
+            del map.Pipes[mouseTile]
+            x, y = mouseTile
+            Neighbours = [(x, y-1), (x, y+1), (x-1, y), (x+1, y)]
+            for coordinates in Neighbours:
+                if coordinates in map.Pipes:
+                    map.Pipes[coordinates].pick_asset(map.pipes)
+        elif mouseTile in map.Pipes:
+            del map.Pipes[mouseTile]
 
     def move_player(map, keys):
         nerf = 1
@@ -158,9 +167,20 @@ class MapClass:
                     if (mouseTileX, mouseTileY) in map.ColorPatches:
                         map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
                 elif hotbar[selectedSlot] == "Pipe":
-                    if (mouseTileX, mouseTileY) not in map.pipes.keys():
-                        map.pipes[(mouseTileX, mouseTileY)] = PipeClass(mouseTileX,mouseTileY,map)
-                        print(mouseTileX,mouseTileY)
+                    if (mouseTileX, mouseTileY) not in map.Pipes.keys():
+                        newPipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
+                        map.Pipes[(mouseTileX, mouseTileY)] = newPipe
+
+                        Neighbours = {
+                            (mouseTileX, mouseTileY),
+                            (mouseTileX, mouseTileY - 1),
+                            (mouseTileX, mouseTileY + 1),
+                            (mouseTileX - 1, mouseTileY),
+                            (mouseTileX + 1, mouseTileY)
+                        }
+                        for coordinates in Neighbours:
+                            if coordinates in map.Pipes:
+                                map.Pipes[coordinates].pick_asset(map.Pipes)
                 else:
                     map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
 
