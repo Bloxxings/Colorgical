@@ -1,23 +1,87 @@
-import pygame
+import pygame, random
 
 
-class PipesClass:
-    def __init__(pipes):
-        pass
+class PipeClass:
+    def __init__(pipe,x,y,map):
+        pipe.x = x
+        pipe.y = y
+        pipe.SIZE = map.TILE_SIZE//3
+        pipe.neighbours = {
+            "Up" : (pipe.x, pipe.y - 1),
+            "Down" : (pipe.x, pipe.y + 1),
+            "Right" : (pipe.x + 1, pipe.y),
+            "Left" : (pipe.x - 1, pipe.y)
+
+            #"UpRight" : (pipe.x + 1, pipe.y - 1),
+            #"UpLeft" : (pipe.x - 1, pipe.y - 1),
+            #"DownRight" : (pipe.x + 1, pipe.y + 1),
+            #"DownLeft" : (pipe.x - 1, pipe.y + 1)
+        }
+        pipe.previous_pipe = None
+        pipe.next_pipe = None
+        pipe.previous_direction = None
+        pipe.next_direction = None
+        pipe.object = None
+        
+        
+    def update_pipe(pipe,map):
+        pipe.get_previous_pipe(map)
+        pipe.get_direction(map)
+    
+    def get_previous_pipe(pipe,map):
+        if pipe.previous_pipe is None or not (pipe.previous_pipe.x,pipe.previous_pipe.y) in map.pipes.keys():
+            neighbours = [1 if dir in map.pipes.keys() else 0 for dir in pipe.neighbours.values()]
+            print((pipe.x,pipe.y),neighbours)
+            if sum(neighbours) == 0:
+                pipe.previous_pipe = None
+            else:
+                possibilities = []
+                for neighbour in pipe.neighbours.values():
+                    if neighbour in map.pipes.keys():
+                        if map.pipes[neighbour].next_pipe is None:
+                            possibilities.append(neighbour)
+                if len(possibilities) == 1:
+                    pipe.previous_pipe = map.pipes[possibilities[0]]
+                else: # Can only be two if diagonals are not allowed
+                    pipe.previous_pipe = map.pipes[random.choice(possibilities)]
+                pipe.previous_pipe.next_pipe = pipe
+    
+    def get_direction(pipe,map):
+        opposites = {
+            "Up": "Down",
+            "Down": "Up",
+            "Left": "Right",
+            "Right": "Left"
+        }
+        if pipe.previous_pipe is not None:
+            for direction, tile in pipe.neighbours.items():
+                if tile in map.pipes.keys():
+                    if map.pipes[tile] == pipe:
+                        pipe.previous_direction = opposites[direction]
+        else:
+            pipe.previous_direction = None
+        
+        if pipe.next_pipe is not None:
+            for direction, tile in pipe.neighbours.items():
+                if tile in map.pipes.keys():
+                    if map.pipes[tile] == pipe:
+                        pipe.next_direction = direction
+        else:
+            pipe.next_direction = None
         
 
-    def draw_pipe_logic(map, drawX, drawY, tileX, tileY, screen, SurfaceCache, TILE_SIZE):
-        pipeSize = TILE_SIZE//3
-        offset = (TILE_SIZE - pipeSize) // 2
-        pygame.draw.rect(screen, (40, 40, 45), (drawX + offset, drawY + offset, pipeSize, pipeSize))
-
+    def draw_pipe_logic(pipe, map, screen):
+        offset = (map.TILE_SIZE - pipe.SIZE) // 2
+        drawX = pipe.x * map.TILE_SIZE - map.x
+        drawY = pipe.y * map.TILE_SIZE - map.y
+        pygame.draw.rect(screen, (40, 40, 45), (drawX + offset, drawY + offset, pipe.SIZE, pipe.SIZE))
         Neighbours = {
-        (tileX, tileY - 1): (offset, 0, pipeSize, offset),                  # Up
-        (tileX, tileY + 1): (offset, offset + pipeSize, pipeSize, offset),  # Down
-        (tileX - 1, tileY): (0, offset, offset, pipeSize),                  # Left
-        (tileX + 1, tileY): (offset + pipeSize, offset, offset, pipeSize)   # Right
+        "Up": (offset, 0, pipe.SIZE, offset),                  
+        "Down": (offset, offset + pipe.SIZE, pipe.SIZE, offset),  
+        "Left": (0, offset, offset, pipe.SIZE),                  
+        "Right": (offset + pipe.SIZE, offset, offset, pipe.SIZE)  
     }
-
-        for coordinates, rectangle in Neighbours.items():
-            if SurfaceCache.get(coordinates) == "Pipe":
-                pygame.draw.rect(screen, (40, 40, 45), (drawX + rectangle[0], drawY + rectangle[1], rectangle[2], rectangle[3]))
+        if pipe.previous_direction is not None:
+            pygame.draw.rect(screen, (40, 40, 45), (drawX + Neighbours[pipe.previous_direction][0], drawY + Neighbours[pipe.previous_direction][1], Neighbours[pipe.previous_direction][2], Neighbours[pipe.previous_direction][3]))
+        if pipe.next_direction is not None:
+            pygame.draw.rect(screen, (40, 40, 45), (drawX + Neighbours[pipe.next_direction][0], drawY + Neighbours[pipe.next_direction][1], Neighbours[pipe.next_direction][2], Neighbours[pipe.next_direction][3]))

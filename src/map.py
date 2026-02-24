@@ -1,6 +1,6 @@
 import pygame
 import random
-from pipes import PipesClass
+from pipes import PipeClass
 
 class MapClass:
     def __init__(map, screen_width, screen_height):
@@ -26,7 +26,7 @@ class MapClass:
         map.mousePositionOnLastFrame = (0, 0)
         map.placeBuilding = False
 
-        map.pipes = PipesClass()
+        map.pipes = {}
         map.direction = "Right"
 
         map.arrowSprite = pygame.image.load("assets/arrow.png")
@@ -60,13 +60,15 @@ class MapClass:
         mouseTile = (mouseTileX, mouseTileY)
         if mouseTile in map.SurfaceCache:
             del map.SurfaceCache[mouseTile]
+        elif mouseTile in map.pipes:
+            del map.pipes[mouseTile]
 
     def move_player(map, keys):
         nerf = 1
         keysPressed = [keys[pygame.K_d], keys[pygame.K_q], keys[pygame.K_z], keys[pygame.K_s]]
         
         pressedCount = sum(keysPressed)
-        if pressedCount >= 2:
+        if pressedCount == 2:
             nerf = 0.7071
         if not map.isCurrentlyDraging:
             if keys[pygame.K_d]:
@@ -136,10 +138,8 @@ class MapClass:
 
                 if (tileX, tileY) in map.SurfaceCache:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
-                    if buildingType == "Pipe":
-                        map.pipes.draw_pipe_logic(drawX, drawY, tileX, tileY, screen, map.SurfaceCache, map.TILE_SIZE)
 
-                    elif buildingType == "Miner":
+                    if buildingType == "Miner":
                         centerX = drawX + map.TILE_SIZE // 2
                         centerY = drawY + map.TILE_SIZE // 2
                         pygame.draw.circle(screen, (255, 127, 0), (centerX, centerY), map.TILE_SIZE // 3)
@@ -157,6 +157,10 @@ class MapClass:
                 if hotbar[selectedSlot] == "Miner":
                     if (mouseTileX, mouseTileY) in map.ColorPatches:
                         map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
+                elif hotbar[selectedSlot] == "Pipe":
+                    if (mouseTileX, mouseTileY) not in map.pipes.keys():
+                        map.pipes[(mouseTileX, mouseTileY)] = PipeClass(mouseTileX,mouseTileY,map)
+                        print(mouseTileX,mouseTileY)
                 else:
                     map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
 

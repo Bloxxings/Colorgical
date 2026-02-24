@@ -1,6 +1,7 @@
 import pygame  # python -m pip install pygame-ce
 from map import MapClass
 from buildings import BuildingsClass
+from pipes import PipeClass
 
 class GameClass:
     def __init__(self):
@@ -70,12 +71,18 @@ class GameClass:
 
         if self.isDeleting:
             self.map.remove_building()
+        
+        for pipe in self.map.pipes.values():
+            pipe.update_pipe(self.map)
+            print((pipe.x,pipe.y),pipe.previous_pipe,pipe.next_pipe)
 
         self.map.move_player(pressed_keys)
 
     def draw(self):
         self.screen.fill((0, 0, 0))
         self.map.draw_map(self.screen, self.buildings.selectedSlot,self.buildings.hotbar)
+        for pipe in self.map.pipes.values():
+            pipe.draw_pipe_logic(self.map,self.screen)
         
         # UI 
         self.draw_fps()
