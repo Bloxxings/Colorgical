@@ -25,10 +25,10 @@ class PipeClass:
         
         
     def update_pipe(pipe,map):
-        pipe.get_previous_pipe(map)
+        pipe.get_pipe_links(map)
         pipe.get_direction(map)
     
-    def get_previous_pipe(pipe,map):
+    def get_pipe_links(pipe,map):
         if pipe.previous_pipe is None or not (pipe.previous_pipe.x,pipe.previous_pipe.y) in map.pipes.keys():
             neighbours = [1 if dir in map.pipes.keys() else 0 for dir in pipe.neighbours.values()]
             if sum(neighbours) == 0:
@@ -58,12 +58,6 @@ class PipeClass:
                             chosen.previous_pipe = pipe
     
     def get_direction(pipe,map):
-        opposites = {
-            "Up": "Down",
-            "Down": "Up",
-            "Left": "Right",
-            "Right": "Left"
-        }
         if pipe.previous_pipe is not None:
             for direction, tile in pipe.neighbours.items():
                 if tile in map.pipes.keys():
