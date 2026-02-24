@@ -71,10 +71,18 @@ class GameClass:
 
         if self.isDeleting:
             self.map.remove_building()
-        
+        print("start")
         for pipe in self.map.pipes.values():
             pipe.update_pipe(self.map)
-            print((pipe.x,pipe.y),pipe.previous_pipe,pipe.next_pipe)
+            if pipe.previous_pipe is not None and pipe.next_pipe is not None:
+                print((pipe.x,pipe.y),(pipe.previous_pipe.x,pipe.previous_pipe.y),(pipe.next_pipe.x,pipe.next_pipe.y))
+            elif pipe.next_pipe is not None:
+                print((pipe.x,pipe.y),pipe.previous_pipe,(pipe.next_pipe.x,pipe.next_pipe.y))
+            elif pipe.previous_pipe is not None:
+                print((pipe.x,pipe.y),(pipe.previous_pipe.x,pipe.previous_pipe.y),pipe.next_pipe) 
+            else:
+                print((pipe.x,pipe.y),pipe.previous_pipe,pipe.next_pipe)
+            print("directions : "+ str((pipe.previous_direction,pipe.next_direction)))
 
         self.map.move_player(pressed_keys)
 

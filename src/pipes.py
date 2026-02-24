@@ -31,7 +31,6 @@ class PipeClass:
     def get_previous_pipe(pipe,map):
         if pipe.previous_pipe is None or not (pipe.previous_pipe.x,pipe.previous_pipe.y) in map.pipes.keys():
             neighbours = [1 if dir in map.pipes.keys() else 0 for dir in pipe.neighbours.values()]
-            print((pipe.x,pipe.y),neighbours)
             if sum(neighbours) == 0:
                 pipe.previous_pipe = None
             else:
@@ -41,10 +40,22 @@ class PipeClass:
                         if map.pipes[neighbour].next_pipe is None:
                             possibilities.append(neighbour)
                 if len(possibilities) == 1:
-                    pipe.previous_pipe = map.pipes[possibilities[0]]
-                else: # Can only be two if diagonals are not allowed
-                    pipe.previous_pipe = map.pipes[random.choice(possibilities)]
-                pipe.previous_pipe.next_pipe = pipe
+                    chosen = map.pipes[possibilities[0]]
+                    if list(map.pipes.keys()).index((pipe.x,pipe.y)) < list(map.pipes.keys()).index((chosen.x,chosen.y)):
+                        if pipe.next_pipe is None:
+                            pipe.previous_pipe = None
+                            chosen.previous_pipe = pipe
+                            pipe.next_pipe = chosen
+                        elif chosen.previous_pipe != pipe:
+                            pipe.previous_pipe = chosen
+                            chosen.next_pipe = pipe
+                    else:
+                        if chosen.next_pipe is None:
+                            pipe.previous_pipe = chosen
+                            chosen.next_pipe = pipe
+                        elif chosen.previous_pipe is None:
+                            pipe.next_pipe = chosen
+                            chosen.previous_pipe = pipe
     
     def get_direction(pipe,map):
         opposites = {
@@ -56,15 +67,15 @@ class PipeClass:
         if pipe.previous_pipe is not None:
             for direction, tile in pipe.neighbours.items():
                 if tile in map.pipes.keys():
-                    if map.pipes[tile] == pipe:
-                        pipe.previous_direction = opposites[direction]
+                    if map.pipes[tile] == pipe.previous_pipe:
+                        pipe.previous_direction = direction
         else:
             pipe.previous_direction = None
         
         if pipe.next_pipe is not None:
             for direction, tile in pipe.neighbours.items():
                 if tile in map.pipes.keys():
-                    if map.pipes[tile] == pipe:
+                    if map.pipes[tile] == pipe.next_pipe:
                         pipe.next_direction = direction
         else:
             pipe.next_direction = None
