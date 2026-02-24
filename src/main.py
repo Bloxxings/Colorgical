@@ -2,6 +2,7 @@ import pygame  # python -m pip install pygame-ce
 from map import MapClass
 from buildings import BuildingsClass
 from pipes import PipeClass
+from miner import MinerClass
 
 class GameClass:
     def __init__(self):
@@ -75,7 +76,10 @@ class GameClass:
 
         if self.isDeleting:
             self.map.remove_building()
-
+        for building in self.map.SurfaceCache.values():
+            if type(building) == MinerClass:
+                building.update_mine()
+                print(building.x,building.y,building.mineCooldown,building.outputcooldown,building.storage)
         self.map.move_player(pressed_keys)
 
     def draw(self):
@@ -90,6 +94,10 @@ class GameClass:
             if (startScreenX - 1 <= x <= endScreenX + 1 and
                startScreenY - 1 <= y <= endScreenY + 1):
                 pipe.draw_pipe(self.screen, self.map.x, self.map.y, self.map.TILE_SIZE)
+
+        for building in self.map.SurfaceCache.values():
+            if type(building) == MinerClass:
+                building.draw_outputs(self.screen,self.map)
         
         # UI 
         self.draw_fps()

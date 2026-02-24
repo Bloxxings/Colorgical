@@ -1,6 +1,7 @@
 import pygame
 import random
 from pipes import PipeClass
+from miner import MinerClass
 
 class MapClass:
     def __init__(map, screen_width, screen_height):
@@ -148,10 +149,11 @@ class MapClass:
                 if (tileX, tileY) in map.SurfaceCache:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
 
-                    if buildingType == "Miner":
+                    if type(buildingType) == MinerClass:
                         centerX = drawX + map.TILE_SIZE // 2
                         centerY = drawY + map.TILE_SIZE // 2
                         pygame.draw.circle(screen, (255, 127, 0), (centerX, centerY), map.TILE_SIZE // 3)
+
 
         map.draw_core(screen)
 
@@ -165,7 +167,7 @@ class MapClass:
             if not isInCore:
                 if hotbar[selectedSlot] == "Miner":
                     if (mouseTileX, mouseTileY) in map.ColorPatches:
-                        map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
+                        map.SurfaceCache[(mouseTileX, mouseTileY)] = MinerClass(mouseTileX,mouseTileY,map.ColorPatches)
                 elif hotbar[selectedSlot] == "Pipe":
                     if (mouseTileX, mouseTileY) not in map.Pipes.keys():
                         newPipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
