@@ -79,13 +79,12 @@ class GameClass:
         self.map.move_player(pressed_keys)
 
     def draw(self):
-
         startScreenX = self.map.x // self.map.TILE_SIZE
         startScreenY = self.map.y // self.map.TILE_SIZE
         endScreenX = (self.map.x + self.SCREEN_WIDTH) // self.map.TILE_SIZE
         endScreenY = (self.map.y + self.SCREEN_HEIGHT) // self.map.TILE_SIZE
         self.screen.fill((0, 0, 0))
-        self.map.draw_map(self.screen, self.buildings.selectedSlot,self.buildings.hotbar)
+        self.map.draw_map(self.screen, self.buildings.selectedSlot,self.buildings.hotbar, self.buildings.currentInteractionMode)
         for (x, y), pipe in self.map.Pipes.items():
             if (startScreenX - 1 <= x <= endScreenX + 1 and
                startScreenY - 1 <= y <= endScreenY + 1):

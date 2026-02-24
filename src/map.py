@@ -68,7 +68,7 @@ class MapClass:
             Neighbours = [(x, y-1), (x, y+1), (x-1, y), (x+1, y)]
             for coordinates in Neighbours:
                 if coordinates in map.Pipes:
-                    map.Pipes[coordinates].pick_asset(map.pipes)
+                    map.Pipes[coordinates].pick_asset(map.Pipes)
         elif mouseTile in map.Pipes:
             del map.Pipes[mouseTile]
 
@@ -119,7 +119,7 @@ class MapClass:
         screen.blit(arrow, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE))
 
 
-    def draw_map(map, screen, selectedSlot,hotbar):
+    def draw_map(map, screen, selectedSlot, hotbar, interactionMode):
         startScreenX = int(map.x // map.TILE_SIZE)
         startScreenY = int(map.y // map.TILE_SIZE)
         endScreenX = int((map.x + map.SCREEN_WIDTH) // map.TILE_SIZE) + 2
@@ -159,8 +159,6 @@ class MapClass:
                    map.coreY <= mouseTileY < (map.coreY + map.coreSize)
         
         if map.placeBuilding:
-            map.direction = "Right"
-            
             
             if not isInCore:
                 if hotbar[selectedSlot] == "Miner":
@@ -184,23 +182,23 @@ class MapClass:
                 else:
                     map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
 
-        if selectedSlot is not None:
+        if selectedSlot is not None and interactionMode == "Building":
+            
+            mousePosition = pygame.mouse.get_pos()
+            mouseTileX = (map.x + mousePosition[0]) // map.TILE_SIZE
+            mouseTileY = (map.y + mousePosition[1]) // map.TILE_SIZE
             buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
             buildingOverlayY = mouseTileY * map.TILE_SIZE - map.y
 
-            buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE))
-            buildingOverlaySurface.set_alpha(120)
-
+            buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE), pygame.SRCALPHA)
 
             if isInCore:
-                overlayColor = (255, 50, 50)
+                overlayColor = (255, 50, 50, 120)
             else:
-                overlayColor = (255, 255, 255)
+                overlayColor = (255, 255, 255, 120)
 
             buildingOverlaySurface.fill(overlayColor)
             screen.blit(buildingOverlaySurface, (buildingOverlayX, buildingOverlayY))
-            pygame.draw.rect(screen, overlayColor,
-                             (buildingOverlayX, buildingOverlayY, map.TILE_SIZE, map.TILE_SIZE), 1)
             
             map.draw_arrow(screen, drawX, drawY, map.direction)
 

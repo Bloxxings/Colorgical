@@ -3,47 +3,40 @@ import random
 
 
 class PipeClass:
-    def __init__(pipe, x, y, direction, Sprites):
-        pipe.x = x
-        pipe.y = y
-        pipe.direction = direction
-        pipe.Sprites = Sprites
-        pipe.startDirection = None
-        pipe.endDirection = direction
-        pipe.image = None
+    def __init__(self, x, y, direction, Sprites):
+        self.x = x
+        self.y = y
+        self.direction = direction
+        self.Sprites = Sprites
+        self.startDirection = None
+        self.endDirection = direction
+        self.image = None
+        self.pick_asset({})
 
-        pipe.pick_asset({})
-
-    def locate_neighbour(pipe, allPipes):
+    def locate_neighbour(self, allPipes):
         Neighbours = {
-            "Up": (pipe.x, pipe.y - 1, "Down"),
-            "Down": (pipe.x, pipe.y + 1, "Up"),
-            "Left": (pipe.x - 1, pipe.y, "Right"),
-            "Right": (pipe.x + 1, pipe.y, "Left")
+            "Up": (self.x, self.y - 1, "Down"),
+            "Down": (self.x, self.y + 1, "Up"),
+            "Left": (self.x - 1, self.y, "Right"),
+            "Right": (self.x + 1, self.y, "Left")
         }
-        for side, (neighbourX, neighbourY, requiredDirection) in Neighbours.items():
-            neighbour = allPipes.get((neighbourX, neighbourY))
-            if neighbour and neighbour.direction == requiredDirection:
+        for side, (nx, ny, req) in Neighbours.items():
+            neighbour = allPipes.get((nx, ny))
+            if neighbour and neighbour.direction == req:
                 return side
         return None
         
-    def pick_asset(pipe, allPipes):
-        pipe.startDirection = pipe.locate_neighbour(allPipes)
-        binaryDirectioning = {
-            "Right": 1,
-            "Down": 2,
-            "Left": 4,
-            "Up": 8
-        }
+    def pick_asset(self, allPipes):
+        self.startDirection = self.locate_neighbour(allPipes)
+        binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
+        
+        tileID = binary.get(self.startDirection, 0) + binary.get(self.endDirection, 0)
+        self.image = self.Sprites.get(tileID, self.Sprites.get(1))
 
-        tileID = binaryDirectioning.get(pipe.startDirection, 0) + \
-                 binaryDirectioning.get(pipe.endDirection, 0)
-        pipe.image = pipe.Sprites[tileID]
-
-    def draw_pipe(pipe, screen, cameraOffsetX, cameraOffsetY, TILE_SIZE):
-        drawX = pipe.x * TILE_SIZE - cameraOffsetX
-        drawY = pipe.y * TILE_SIZE - cameraOffsetY
-        screen.blit(pipe.image, (drawX, drawY))
+    def draw_pipe(self, screen, camX, camY, TILE_SIZE):
+        drawX = self.x * TILE_SIZE - camX
+        drawY = self.y * TILE_SIZE - camY
+        screen.blit(self.image, (drawX, drawY))
 
 
 
