@@ -68,29 +68,28 @@ class GameClass:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
                     self.coordsMouseMode =  not self.coordsMouseMode
+                if event.key == pygame.K_r:
+                    directions = ["Right", "Down", "Left", "Up"]
+                    currentDirection = directions.index(self.map.direction)
+                    self.map.direction = directions[(currentDirection + 1) % 4]
 
         if self.isDeleting:
             self.map.remove_building()
-        print("start")
-        for pipe in self.map.pipes.values():
-            pipe.update_pipe(self.map)
-            if pipe.previous_pipe is not None and pipe.next_pipe is not None:
-                print((pipe.x,pipe.y),(pipe.previous_pipe.x,pipe.previous_pipe.y),(pipe.next_pipe.x,pipe.next_pipe.y))
-            elif pipe.next_pipe is not None:
-                print((pipe.x,pipe.y),pipe.previous_pipe,(pipe.next_pipe.x,pipe.next_pipe.y))
-            elif pipe.previous_pipe is not None:
-                print((pipe.x,pipe.y),(pipe.previous_pipe.x,pipe.previous_pipe.y),pipe.next_pipe) 
-            else:
-                print((pipe.x,pipe.y),pipe.previous_pipe,pipe.next_pipe)
-            print("directions : "+ str((pipe.previous_direction,pipe.next_direction)))
 
         self.map.move_player(pressed_keys)
 
     def draw(self):
+
+        startScreenX = self.map.x // self.map.TILE_SIZE
+        startScreenY = self.map.y // self.map.TILE_SIZE
+        endScreenX = (self.map.x + self.SCREEN_WIDTH) // self.map.TILE_SIZE
+        endScreenY = (self.map.y + self.SCREEN_HEIGHT) // self.map.TILE_SIZE
         self.screen.fill((0, 0, 0))
         self.map.draw_map(self.screen, self.buildings.selectedSlot,self.buildings.hotbar)
-        for pipe in self.map.pipes.values():
-            pipe.draw_pipe_logic(self.map,self.screen)
+        for (x, y), pipe in self.map.Pipes.items():
+            if (startScreenX - 1 <= x <= endScreenX + 1 and
+               startScreenY - 1 <= y <= endScreenY + 1):
+                pipe.draw_pipe(self.screen, self.map.x, self.map.y, self.map.TILE_SIZE)
         
         # UI 
         self.draw_fps()
