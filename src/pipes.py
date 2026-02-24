@@ -77,37 +77,37 @@ class PipeClass:
         
         
     def update_pipe(pipe,map):
-        pipe.get_pipe_links(map)
+        if pipe.previous_pipe is None or not (pipe.previous_pipe.x,pipe.previous_pipe.y) in map.pipes.keys():
+            pipe.get_pipe_links(map)
         pipe.get_direction(map)
     
     def get_pipe_links(pipe,map):
-        if pipe.previous_pipe is None or not (pipe.previous_pipe.x,pipe.previous_pipe.y) in map.pipes.keys():
-            neighbours = [1 if dir in map.pipes.keys() else 0 for dir in pipe.neighbours.values()]
-            if sum(neighbours) == 0:
-                pipe.previous_pipe = None
-            else:
-                possibilities = []
-                for neighbour in pipe.neighbours.values():
-                    if neighbour in map.pipes.keys():
-                        if map.pipes[neighbour].next_pipe is None:
-                            possibilities.append(neighbour)
-                if len(possibilities) == 1:
-                    chosen = map.pipes[possibilities[0]]
-                    if list(map.pipes.keys()).index((pipe.x,pipe.y)) < list(map.pipes.keys()).index((chosen.x,chosen.y)):
-                        if pipe.next_pipe is None:
-                            pipe.previous_pipe = None
-                            chosen.previous_pipe = pipe
-                            pipe.next_pipe = chosen
-                        elif chosen.previous_pipe != pipe:
-                            pipe.previous_pipe = chosen
-                            chosen.next_pipe = pipe
-                    else:
-                        if chosen.next_pipe is None:
-                            pipe.previous_pipe = chosen
-                            chosen.next_pipe = pipe
-                        elif chosen.previous_pipe is None:
-                            pipe.next_pipe = chosen
-                            chosen.previous_pipe = pipe
+        neighbours = [1 if dir in map.pipes.keys() else 0 for dir in pipe.neighbours.values()]
+        if sum(neighbours) == 0:
+            pipe.previous_pipe = None
+        else:
+            possibilities = []
+            for neighbour in pipe.neighbours.values():
+                if neighbour in map.pipes.keys():
+                    if map.pipes[neighbour].next_pipe is None:
+                        possibilities.append(neighbour)
+            if len(possibilities) == 1:
+                chosen = map.pipes[possibilities[0]]
+                if list(map.pipes.keys()).index((pipe.x,pipe.y)) < list(map.pipes.keys()).index((chosen.x,chosen.y)):
+                    if pipe.next_pipe is None:
+                        pipe.previous_pipe = None
+                        chosen.previous_pipe = pipe
+                        pipe.next_pipe = chosen
+                    elif chosen.previous_pipe != pipe:
+                        pipe.previous_pipe = chosen
+                        chosen.next_pipe = pipe
+                else:
+                    if chosen.next_pipe is None:
+                        pipe.previous_pipe = chosen
+                        chosen.next_pipe = pipe
+                    elif chosen.previous_pipe is None:
+                        pipe.next_pipe = chosen
+                        chosen.previous_pipe = pipe
     
     def get_direction(pipe,map):
         if pipe.previous_pipe is not None:
