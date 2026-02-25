@@ -50,7 +50,7 @@ class GameClass:
                     self.map.TILE_SIZE -= 4
                     self.map.update_font_size()
 
-            self.buildings.handle_event(event, mousePosition, self.screen)
+            self.buildings.handle_event(event, mousePosition, self.screen, self.map)
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
