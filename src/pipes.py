@@ -29,7 +29,7 @@ class PipeClass:
         connections = self.get_connections(allPipes)
         
         binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
-        tileID = sum(binary[d] for d in connections)
+        tileID = sum(binary[d] for d in connections) - 1
         if tileID == 0:
             tileID = binary.get(self.direction, 1)
 
