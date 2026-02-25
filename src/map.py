@@ -2,9 +2,17 @@ import pygame
 import random
 from pipes import PipeClass
 from miner import MinerClass
+import os
+
+
 
 class MapClass:
     def __init__(map, screen_width, screen_height):
+
+        map.base_path = os.path.dirname(os.path.abspath(__file__))
+        map.root_path = os.path.join(map.base_path, "..")
+        map.assets_path = os.path.join(map.root_path, "assets")
+
         map.SCREEN_WIDTH = screen_width
         map.SCREEN_HEIGHT = screen_height
         map.TILE_SIZE = 40
@@ -14,11 +22,9 @@ class MapClass:
         map.coreX, map.coreY = -3 , -3
         map.x = (map.coreX * map.TILE_SIZE) - (screen_width // 2) + (map.coreSize * map.TILE_SIZE // 2)
         map.y = (map.coreY * map.TILE_SIZE) - (screen_height // 2) + (map.coreSize * map.TILE_SIZE // 2)
-        map.update_font_size()
         
         map.ColorPatches = {}
         map.colorSpacing = 50
-        map.compute_ressources_position(5)
 
         map.ModifiedTiles = {}
         map.SurfaceCache = {}
@@ -30,11 +36,20 @@ class MapClass:
         map.Pipes = {}
         map.direction = "Right"
 
-        map.arrowSprite = pygame.image.load("assets/arrow.png")
+        
+        arrow_full_path = os.path.join(map.assets_path, "arrow.png")
+        map.arrowSprite = pygame.image.load(arrow_full_path).convert_alpha()
+
+        # Pipes
         map.PipeSprites = {}
         for i in range(1, 25):
-            img = pygame.image.load(f"assets/pipes/pipe{i}.png").convert_alpha()
-            map.PipeSprites[i] = pygame.transform.scale(img, (map.TILE_SIZE, map.TILE_SIZE))
+            p_path = os.path.join(map.assets_path, "pipes", f"pipe{i}.png")
+            if os.path.exists(p_path):
+                img = pygame.image.load(p_path).convert_alpha()
+                map.PipeSprites[i] = pygame.transform.scale(img, (map.TILE_SIZE, map.TILE_SIZE))
+
+        map.update_font_size()
+        map.compute_ressources_position(5)
 
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
@@ -70,8 +85,8 @@ class MapClass:
             for coordinates in Neighbours:
                 if coordinates in map.Pipes:
                     map.Pipes[coordinates].pick_asset(map.Pipes)
-        elif mouseTile in map.Pipes:
-            del map.Pipes[mouseTile]
+        elif mouseTile in map.SurfaceCache:
+            del map.SurfaceCache[mouseTile]
 
     def move_player(map, keys):
         nerf = 1
@@ -149,103 +164,47 @@ class MapClass:
                 if (tileX, tileY) in map.SurfaceCache:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
 
-                    if type(buildingType) == MinerClass:
+                    if type(buildingType) is MinerClass:
                         centerX = drawX + map.TILE_SIZE // 2
                         centerY = drawY + map.TILE_SIZE // 2
                         pygame.draw.circle(screen, (255, 127, 0), (centerX, centerY), map.TILE_SIZE // 3)
-
-
-        map.draw_core(screen)
+        
 
         isInCore = map.coreX <= mouseTileX < (map.coreX + map.coreSize) and \
                    map.coreY <= mouseTileY < (map.coreY + map.coreSize)
         
-        if map.placeBuilding:
+        if map.placeBuilding and not isInCore:
+            item = hotbar[selectedSlot]
             
-            if not isInCore:
-                if hotbar[selectedSlot] == "Miner":
-                    if (mouseTileX, mouseTileY) in map.ColorPatches:
-                        map.SurfaceCache[(mouseTileX, mouseTileY)] = MinerClass(mouseTileX,mouseTileY,map.ColorPatches)
-                elif hotbar[selectedSlot] == "Pipe":
-                    if (mouseTileX, mouseTileY) not in map.Pipes.keys():
-                        newPipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
-                        map.Pipes[(mouseTileX, mouseTileY)] = newPipe
+            if item == "Miner":
+                if (mouseTileX, mouseTileY) in map.ColorPatches:
+                    map.SurfaceCache[(mouseTileX, mouseTileY)] = MinerClass(mouseTileX, mouseTileY, map.ColorPatches)
 
-                        Neighbours = {
-                            (mouseTileX, mouseTileY),
-                            (mouseTileX, mouseTileY - 1),
-                            (mouseTileX, mouseTileY + 1),
-                            (mouseTileX - 1, mouseTileY),
-                            (mouseTileX + 1, mouseTileY)
-                        }
-                        for coordinates in Neighbours:
-                            if coordinates in map.Pipes:
-                                map.Pipes[coordinates].pick_asset(map.Pipes)
-                else:
-                    map.SurfaceCache[(mouseTileX, mouseTileY)] = hotbar[selectedSlot]
+            elif item == "Pipe":
+                if (mouseTileX, mouseTileY) not in map.Pipes:
+                    map.Pipes[(mouseTileX, mouseTileY)] = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
 
-        if selectedSlot is not None and interactionMode == "Building":
-            
-            mousePosition = pygame.mouse.get_pos()
-            mouseTileX = (map.x + mousePosition[0]) // map.TILE_SIZE
-            mouseTileY = (map.y + mousePosition[1]) // map.TILE_SIZE
-            buildingOverlayX = mouseTileX * map.TILE_SIZE - map.x
-            buildingOverlayY = mouseTileY * map.TILE_SIZE - map.y
-
-            buildingOverlaySurface = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE), pygame.SRCALPHA)
-
-            if isInCore:
-                overlayColor = (255, 50, 50, 120)
+                    for neighbourX, neighbourY in [(0,0), (0,-1), (0,1), (-1,0), (1,0)]:
+                        target = (mouseTileX + neighbourX, mouseTileY + neighbourY)
+                        if target in map.Pipes:
+                            map.Pipes[target].pick_asset(map.Pipes)
             else:
-                overlayColor = (255, 255, 255, 120)
+                map.SurfaceCache[(mouseTileX, mouseTileY)] = item
 
-            buildingOverlaySurface.fill(overlayColor)
-            screen.blit(buildingOverlaySurface, (buildingOverlayX, buildingOverlayY))
+
+        if interactionMode == "Building" and selectedSlot is not None:
+            overlayX = mouseTileX * map.TILE_SIZE - map.x
+            overlayY = mouseTileY * map.TILE_SIZE - map.y
+
+            overlaySurf = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE), pygame.SRCALPHA)
+            overlayColor = (255, 50, 50, 120) if isInCore else (255, 255, 255, 120)
             
-            map.draw_arrow(screen, drawX, drawY, map.direction)
+            overlaySurf.fill(overlayColor)
+            screen.blit(overlaySurf, (overlayX, overlayY))
 
+            map.draw_arrow(screen, overlayX, overlayY, map.direction)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        map.draw_core(screen)
 
 
 

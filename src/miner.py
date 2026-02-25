@@ -25,7 +25,6 @@ class MinerClass:
     def empty_storage(miner):
         miner.outputcooldown -= 1 
         if miner.outputcooldown <= 0 and miner.output is not None and miner.storage != []:
-            print("hello")
             miner.outputs.append(miner.storage.pop())
             miner.outputcooldown = 30
 

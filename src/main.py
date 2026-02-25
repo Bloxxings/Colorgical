@@ -1,7 +1,6 @@
 import pygame  # python -m pip install pygame-ce
 from map import MapClass
 from buildings import BuildingsClass
-from pipes import PipeClass
 from miner import MinerClass
 
 class GameClass:
@@ -10,7 +9,7 @@ class GameClass:
         pygame.mixer.init()
         pygame.font.init()
 
-        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF)
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = self.screen.get_size()
 
         self.font = pygame.font.SysFont("Consolas", 24, bold=True)
@@ -69,17 +68,19 @@ class GameClass:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
                     self.coordsMouseMode =  not self.coordsMouseMode
+                directions = ["Right", "Down", "Left", "Up"]
                 if event.key == pygame.K_r:
-                    directions = ["Right", "Down", "Left", "Up"]
                     currentDirection = directions.index(self.map.direction)
                     self.map.direction = directions[(currentDirection + 1) % 4]
+                if event.key == pygame.K_t:
+                    currentDirection = directions.index(self.map.direction)
+                    self.map.direction = directions[(currentDirection - 1) % 4]
 
         if self.isDeleting:
             self.map.remove_building()
         for building in self.map.SurfaceCache.values():
-            if type(building) == MinerClass:
+            if type(building) is MinerClass:
                 building.update_mine()
-                print(building.x,building.y,building.mineCooldown,building.outputcooldown,building.storage)
         self.map.move_player(pressed_keys)
 
     def draw(self):
@@ -95,7 +96,7 @@ class GameClass:
                 pipe.draw_pipe(self.screen, self.map.x, self.map.y, self.map.TILE_SIZE)
 
         for building in self.map.SurfaceCache.values():
-            if type(building) == MinerClass:
+            if type(building) is MinerClass:
                 building.draw_outputs(self.screen,self.map)
         
         # UI 

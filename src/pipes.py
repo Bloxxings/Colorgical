@@ -1,7 +1,3 @@
-import pygame
-import random
-
-
 class PipeClass:
     def __init__(self, x, y, direction, Sprites):
         self.x = x
@@ -13,24 +9,28 @@ class PipeClass:
         self.image = None
         self.pick_asset({})
 
-    def locate_neighbour(self, allPipes):
-        Neighbours = {
-            "Up": (self.x, self.y - 1, "Down"),
-            "Down": (self.x, self.y + 1, "Up"),
-            "Left": (self.x - 1, self.y, "Right"),
-            "Right": (self.x + 1, self.y, "Left")
+    def get_connections(self, allPipes):
+        connections = []
+        check = {
+            "Up": (self.x, self.y - 1),
+            "Down": (self.x, self.y + 1),
+            "Left": (self.x - 1, self.y),
+            "Right": (self.x + 1, self.y)
         }
-        for side, (nx, ny, req) in Neighbours.items():
-            neighbour = allPipes.get((nx, ny))
-            if neighbour and neighbour.direction == req:
-                return side
-        return None
+        
+        for direction, coords in check.items():
+            if coords in allPipes:
+                connections.append(direction)
+        return connections
         
     def pick_asset(self, allPipes):
-        self.startDirection = self.locate_neighbour(allPipes)
-        binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
+        connections = self.get_connections(allPipes)
         
-        tileID = binary.get(self.startDirection, 0) + binary.get(self.endDirection, 0)
+        binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
+        tileID = sum(binary[d] for d in connections)
+        if tileID == 0:
+            tileID = binary.get(self.direction, 1)
+
         self.image = self.Sprites.get(tileID, self.Sprites.get(1))
 
     def draw_pipe(self, screen, camX, camY, TILE_SIZE):
