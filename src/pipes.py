@@ -1,3 +1,5 @@
+import pygame
+
 class PipeClass:
     def __init__(self, x, y, direction, Sprites):
         self.x = x
@@ -36,7 +38,10 @@ class PipeClass:
     def draw_pipe(self, screen, camX, camY, TILE_SIZE):
         drawX = self.x * TILE_SIZE - camX
         drawY = self.y * TILE_SIZE - camY
-        screen.blit(self.image, (drawX, drawY))
+        sizeChange = TILE_SIZE - 40
+        imageSize = self.image.get_rect()[2:4]
+        image = pygame.transform.scale(self.image,(imageSize[0] + sizeChange, imageSize[1] + sizeChange))
+        screen.blit(image, (drawX, drawY))
 
 
 
