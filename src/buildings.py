@@ -34,7 +34,7 @@ class BuildingsClass:
                     self.currentInteractionMode = "Building"
                 
 
-    def draw_building_bar(self, screen):
+    def draw_building_bar(self, screen, objects):
 
         totalWidth = len(self.hotbar) * self.SLOT_SIZE
         startX = (screen.get_width() // 2) - (totalWidth // 2)
@@ -64,7 +64,7 @@ class BuildingsClass:
                 isSelected = (i == self.selectedSlot)
             else:
                 isSelected = False
-            backgroundColor = (40, 44, 52) if not isSelected else (60, 70, 90)
+            backgroundColor = (40, 44, 52) if not isSelected else (80, 90, 110)
 
             # Draw Slot
             pygame.draw.rect(screen, backgroundColor, (x, y, self.SLOT_SIZE, self.SLOT_SIZE))
@@ -73,4 +73,8 @@ class BuildingsClass:
             screen.blit(text, textRect)
             numberText = self.font.render(str(i+1), True, (100, 110, 120))
             screen.blit(numberText, (x + 5, y + 5))
+
+            if item == "Pipe":
+                pipeImg = pygame.transform.scale(objects[item],(self.SLOT_SIZE * 0.6,self.SLOT_SIZE * 0.6))
+                screen.blit(pipeImg,(x + self.SLOT_SIZE*0.2,y + self.SLOT_SIZE*0.1))
 

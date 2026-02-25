@@ -105,7 +105,7 @@ class GameClass:
         # UI 
         self.draw_fps()
         self.draw_coords()
-        self.buildings.draw_building_bar(self.screen)
+        self.buildings.draw_building_bar(self.screen,self.map.everyBuilding)
 
     def draw_fps(self):
         fps_val = int(self.clock.get_fps())
