@@ -27,7 +27,6 @@ class GameClass:
         pressed_keys = pygame.key.get_pressed()
         mousePosition = pygame.mouse.get_pos()
         for event in pygame.event.get():
-            self.buildings.handle_event(event)
 
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
@@ -39,6 +38,7 @@ class GameClass:
                         self.map.mousePositionOnLastFrame = mousePosition
                     elif self.buildings.currentInteractionMode == "Building":
                         self.map.placeBuilding = True
+            
 
                 if event.button == 3:
                     self.isDeleting = True
@@ -49,6 +49,8 @@ class GameClass:
                 if event.button == 5 and self.map.TILE_SIZE > 20: # Scroll down
                     self.map.TILE_SIZE -= 4
                     self.map.update_font_size()
+
+            self.buildings.handle_event(event, mousePosition, self.screen)
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -69,12 +71,13 @@ class GameClass:
                 if event.key == pygame.K_m:
                     self.coordsMouseMode =  not self.coordsMouseMode
                 directions = ["Right", "Down", "Left", "Up"]
-                if event.key == pygame.K_r:
-                    currentDirection = directions.index(self.map.direction)
-                    self.map.direction = directions[(currentDirection + 1) % 4]
-                if event.key == pygame.K_t:
-                    currentDirection = directions.index(self.map.direction)
-                    self.map.direction = directions[(currentDirection - 1) % 4]
+                if self.buildings.currentInteractionMode == "Building":
+                    if event.key == pygame.K_r:
+                        currentDirection = directions.index(self.map.direction)
+                        self.map.direction = directions[(currentDirection + 1) % 4]
+                    if event.key == pygame.K_e:
+                        currentDirection = directions.index(self.map.direction)
+                        self.map.direction = directions[(currentDirection - 1) % 4]
 
         if self.isDeleting:
             self.map.remove_building()

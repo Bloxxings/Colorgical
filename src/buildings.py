@@ -8,7 +8,7 @@ class BuildingsClass:
         self.font = pygame.font.SysFont("Consolas", 14, bold=True)
         self.currentInteractionMode = "Moving" # Or "Building"
 
-    def handle_event(self, event):
+    def handle_event(self, event, mousePosition, screen):
         if event.type == pygame.KEYDOWN:
             if pygame.K_1 <= event.key <= pygame.K_9:
                 index = event.key - pygame.K_1
@@ -19,6 +19,14 @@ class BuildingsClass:
                         self.selectedSlot = None
                     else:
                         self.selectedSlot = index
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            startHotbarX = (screen.get_width() // 2) - (9 * self.SLOT_SIZE // 2)
+            endHotbarX = (screen.get_width() // 2) + (9 * self.SLOT_SIZE // 2)
+            startHotbarY = screen.get_height() - self.SLOT_SIZE - 30
+            endHotbarY = screen.get_height() - 30
+            if startHotbarX <= mousePosition[0] <= endHotbarX and startHotbarY <= mousePosition[1] <= endHotbarY:
+                self.selectedSlot = (mousePosition[0] - startHotbarX)//self.SLOT_SIZE
+                self.currentInteractionMode = "Building"
                 
 
     def draw_building_bar(self, screen):
