@@ -11,7 +11,7 @@ class MapClass:
 
         map.base_path = os.path.dirname(os.path.abspath(__file__))
         map.root_path = os.path.join(map.base_path, "..")
-        map.assets_path = os.path.join(map.root_path, "assets")
+        map.assets_path = os.path.join(map.root_path, "assets/buildings")
 
         map.SCREEN_WIDTH = screen_width
         map.SCREEN_HEIGHT = screen_height
