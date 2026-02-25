@@ -37,11 +37,12 @@ class MapClass:
         map.direction = "Right"
 
         # Name associated with image for the inventory
-        pipeImage = pygame.image.load("assets/pipes/pipe16.png").convert_alpha()
+        pipe16Path = os.path.join(map.assets_path, "pipes", "pipe16.png")
+        pipeImage = pygame.image.load(pipe16Path).convert_alpha()
         map.everyBuilding = {"Pipe" : pipeImage}
 
-        arrow_full_path = os.path.join(map.assets_path, "arrow.png")
-        map.arrowSprite = pygame.image.load(arrow_full_path).convert_alpha()
+        arrowPath = os.path.join(map.root_path, "assets", "arrow.png")
+        map.arrowSprite = pygame.image.load(arrowPath).convert_alpha()
 
         # Pipes
         map.PipeSprites = {}
