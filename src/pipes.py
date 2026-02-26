@@ -29,7 +29,7 @@ class PipeClass:
         connections = self.get_connections(allPipes)
         
         binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
-        tileID = sum(binary[d] for d in connections) - 1
+        tileID = sum(binary[d] for d in connections)
         if tileID == 0:
             tileID = binary.get(self.direction, 1)
 
@@ -38,10 +38,8 @@ class PipeClass:
     def draw_pipe(self, screen, camX, camY, TILE_SIZE):
         drawX = self.x * TILE_SIZE - camX
         drawY = self.y * TILE_SIZE - camY
-        sizeChange = TILE_SIZE - 40
-        imageSize = self.image.get_rect()[2:4]
-        image = pygame.transform.scale(self.image,(imageSize[0] + sizeChange, imageSize[1] + sizeChange))
-        screen.blit(image, (drawX, drawY))
+        if self.image:
+            screen.blit(self.image, (drawX, drawY))
 
 
 

@@ -46,9 +46,11 @@ class GameClass:
                 if event.button == 4 and self.map.TILE_SIZE < 64: # Scroll up
                     self.map.TILE_SIZE += 4
                     self.map.update_font_size()
+                    self.map.zoom_assets()
                 if event.button == 5 and self.map.TILE_SIZE > 20: # Scroll down
                     self.map.TILE_SIZE -= 4
                     self.map.update_font_size()
+                    self.map.zoom_assets()
 
             self.buildings.handle_event(event, mousePosition, self.screen, self.map)
 

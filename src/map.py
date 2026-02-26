@@ -45,13 +45,16 @@ class MapClass:
         map.arrowSprite = pygame.image.load(arrowPath).convert_alpha()
 
         # Pipes
+
+        map.OriginalPipeSprites = {}
         map.PipeSprites = {}
         for i in range(0, 29):
             p_path = os.path.join(map.assets_path, "pipes", f"pipe{i}.png")
             if os.path.exists(p_path):
-                img = pygame.image.load(p_path).convert_alpha()
-                map.PipeSprites[i] = pygame.transform.scale(img, (map.TILE_SIZE, map.TILE_SIZE))
+                originalImg = pygame.image.load(p_path).convert_alpha()
+                map.OriginalPipeSprites[i] = originalImg
 
+        map.zoom_assets()
         map.update_font_size()
         map.compute_ressources_position(5)
 
@@ -76,6 +79,14 @@ class MapClass:
                     for y in range(patchSizeHeight):
                         if random.random() > 0.1:
                             map.ColorPatches[(spawnX + x, spawnY + y)] = color
+
+    def zoom_assets(map):
+        for i, originalImg in map.OriginalPipeSprites.items():
+            map.PipeSprites[i] = pygame.transform.scale(originalImg, (map.TILE_SIZE, map.TILE_SIZE))
+        
+        for pipe in map.Pipes.values():
+            pipe.Sprites = map.PipeSprites
+            pipe.pick_asset(map.Pipes)
 
     def remove_building(map):
         mousePosition = pygame.mouse.get_pos()
@@ -172,7 +183,8 @@ class MapClass:
                         centerX = drawX + map.TILE_SIZE // 2
                         centerY = drawY + map.TILE_SIZE // 2
                         pygame.draw.circle(screen, (255, 127, 0), (centerX, centerY), map.TILE_SIZE // 3)
-        
+
+        map.draw_core(screen)
 
         isInCore = map.coreX <= mouseTileX < (map.coreX + map.coreSize) and \
                    map.coreY <= mouseTileY < (map.coreY + map.coreSize)
@@ -208,7 +220,7 @@ class MapClass:
 
             map.draw_arrow(screen, overlayX, overlayY, map.direction)
 
-        map.draw_core(screen)
+        
 
 
 
