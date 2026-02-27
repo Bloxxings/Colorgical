@@ -8,3 +8,5 @@ But at night, grey squares turn into dark, black squares. Same thing as in real 
 Is this idea fire ? yes/no
 
 hell yeah Good idea, I do know a game where the point is to color the map but it is more of an adventure and find the lore game rather than this and there is no logic gameplay.
+
+lowkey we should update this documentation
