@@ -48,7 +48,7 @@ class MapClass:
 
         map.OriginalPipeSprites = {}
         map.PipeSprites = {}
-        for i in range(0, 29):
+        for i in range(30):
             p_path = os.path.join(map.assets_path, "pipes", f"pipe{i}.png")
             if os.path.exists(p_path):
                 originalImg = pygame.image.load(p_path).convert_alpha()
@@ -181,8 +181,7 @@ class MapClass:
         screen.blit(overlaySurf, (overlayX, overlayY))
         if selectedBuilding == "Pipe":
             pipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
-            pipe.pick_asset(map.Pipes)
-            pipe.draw_pipe(screen, map.x, map.y, map.TILE_SIZE, overlay=True)
+            pipe.draw_pipe(screen, map.x, map.y, map.TILE_SIZE, map.Pipes, overlay=True)
 
         elif selectedBuilding == "Block":
             pass
@@ -249,12 +248,14 @@ class MapClass:
 
             elif item == "Pipe":
                 if (mouseTileX, mouseTileY) not in map.Pipes:
-                    map.Pipes[(mouseTileX, mouseTileY)] = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
+                    new_pipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
+                    map.Pipes[(mouseTileX, mouseTileY)] = new_pipe
 
-                    for neighbourX, neighbourY in [(0,0), (0,-1), (0,1), (-1,0), (1,0)]:
-                        target = (mouseTileX + neighbourX, mouseTileY + neighbourY)
-                        if target in map.Pipes:
-                            map.Pipes[target].pick_asset(map.Pipes)
+                    for neighbourX in range(-1, 2):
+                        for neighbourY in range(-1, 2):
+                            target = (mouseTileX + neighbourX, mouseTileY + neighbourY)
+                            if target in map.Pipes:
+                                map.Pipes[target].pick_asset(map.Pipes)
             else:
                 map.SurfaceCache[(mouseTileX, mouseTileY)] = item
 

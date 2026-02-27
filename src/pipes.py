@@ -1,3 +1,6 @@
+import pygame
+
+
 class PipeClass:
     def __init__(pipe, x, y, direction, Sprites):
         pipe.x = x
@@ -7,35 +10,11 @@ class PipeClass:
         pipe.startDirection = None
         pipe.endDirection = direction
         pipe.image = None
+        pipe.Crossings = [7, 11, 13, 14, 15]
+        pipe.binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
         pipe.pick_asset({})
-
-        pipe.AssetDirectionsForOverlay = {
-            "Left":{
-                ("Left"): 4,
-                ("Left", "Down"): 24,
-                ("Left", "Up"): 28
-            },
-            "Right":{
-                ("Right"): 1,
-                ("Right", "Up"): 22,
-                ("Left", "Down"): 26
-            },
-            "Up":{
-                ("Up"): 8,
-                ("Up", "Left"): 23,
-                ("Up", "Right"): 27
-            },
-            "Down":{
-                ("Down"): 2,
-                ("Down", "Right"): 25,
-                ("Down", "Left"): 29
-            }
-        }
-
-    def calc_overlay_asset(pipe, allPipes):
-        connections = pipe.get_connections(allPipes)
         
-
+        
     def get_connections(pipe, allPipes):
         connections = []
         check = {
@@ -50,30 +29,91 @@ class PipeClass:
                 connections.append(direction)
         return connections
         
-    def pick_asset(pipe, allPipes):
+
+    def calc_overlay_asset(pipe, allPipes):
+
         connections = pipe.get_connections(allPipes)
-        
-        binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
-        tileID = sum(binary[d] for d in connections)
-        if tileID == 0:
-            tileID = binary.get(pipe.direction, 1)
 
+        if not connections:
+            tileID = pipe.binary.get(pipe.direction, 1)
+        else:
+            neighbour = connections[0]
+            assetID = {
+                # Neighbor is to the LEFT of the mouse
+                ("Left", "Right"): 5,  ("Left", "Down"): 24, ("Left", "Up"): 28,
+                
+                # Neighbor is to the RIGHT of the mouse
+                ("Right", "Left"): 5,  ("Right", "Up"): 22,   ("Right", "Down"): 26,
+                
+                # Neighbor is ABOVE the mouse
+                ("Up", "Down"): 10,    ("Up", "Left"): 23,    ("Up", "Right"): 27,
+                
+                # Neighbor is BELOW the mouse
+                ("Down", "Up"): 10,    ("Down", "Right"): 25, ("Down", "Left"): 29
+            }
+
+            tileID = assetID.get((neighbour, pipe.direction), pipe.binary.get(pipe.direction, 1))
+        binarySum = sum(pipe.binary[d] for d in connections)
+        if binarySum in pipe.Crossings:
+            tileID = binarySum
         pipe.image = pipe.Sprites.get(tileID, pipe.Sprites.get(1))
+        return tileID
 
-    def draw_pipe(pipe, screen, camX, camY, TILE_SIZE, overlay=False):
+
+
+
+    def pick_asset(pipe, allPipes):
+
+        connections = pipe.get_connections(allPipes)
+        tileID = sum(pipe.binary[d] for d in connections)
+
+        if len(connections) == 1:
+            neighbour = connections[0]
+            assetID = {
+                # Neighbor is to the LEFT of the mouse
+                ("Left", "Right"): 5,  ("Left", "Down"): 24, ("Left", "Up"): 28,
+                
+                # Neighbor is to the RIGHT of the mouse
+                ("Right", "Left"): 5,  ("Right", "Up"): 22,   ("Right", "Down"): 26,
+                
+                # Neighbor is ABOVE the mouse
+                ("Up", "Down"): 10,    ("Up", "Left"): 23,    ("Up", "Right"): 27,
+                
+                # Neighbor is BELOW the mouse
+                ("Down", "Up"): 10,    ("Down", "Right"): 25, ("Down", "Left"): 29
+            }
+            tileID = assetID.get((neighbour, pipe.direction), pipe.binary.get(pipe.direction, 1))
+        
+        if tileID == 0:
+            tileID = pipe.binary.get(pipe.direction, 1)
+            
+        if tileID in pipe.Crossings:
+            return 
+        else:
+            pipe.image = pipe.Sprites.get(tileID, pipe.Sprites.get(1))
+
+
+
+
+    def draw_pipe(pipe, screen, camX, camY, TILE_SIZE, allPipes=None, overlay=False):
         drawX = pipe.x * TILE_SIZE - camX
         drawY = pipe.y * TILE_SIZE - camY
         if overlay:
-            pipe.calc_overlay_asset({})
-            pipe.image.set_alpha(120)
-            screen.blit(pipe.image, (drawX, drawY))
+            pipe.calc_overlay_asset(allPipes if allPipes is not None else {})
+            if pipe.image:
+                pipe.image.set_alpha(120)
+                mousePosition = pygame.mouse.get_pos()
+                mouseX = mousePosition[0] - TILE_SIZE//2
+                mouseY = mousePosition[1] - TILE_SIZE//2
+                screen.blit(pipe.image, (mouseX, mouseY))
         else:
             pipe.image.set_alpha(255)
             if pipe.image:
                 screen.blit(pipe.image, (drawX, drawY))
             else:
-                pipe.pick_asset({})
-                screen.blit(pipe.image, (drawX, drawY))
+                pipe.pick_asset(allPipes if allPipes is not None else {})
+                if pipe.image:
+                    screen.blit(pipe.image, (drawX, drawY))
 
 
 
