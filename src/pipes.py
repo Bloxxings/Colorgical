@@ -1,5 +1,3 @@
-import pygame
-
 class PipeClass:
     def __init__(pipe, x, y, direction, Sprites):
         pipe.x = x
@@ -10,6 +8,33 @@ class PipeClass:
         pipe.endDirection = direction
         pipe.image = None
         pipe.pick_asset({})
+
+        pipe.AssetDirectionsForOverlay = {
+            "Left":{
+                ("Left"): 4,
+                ("Left", "Down"): 24,
+                ("Left", "Up"): 28
+            },
+            "Right":{
+                ("Right"): 1,
+                ("Right", "Up"): 22,
+                ("Left", "Down"): 26
+            },
+            "Up":{
+                ("Up"): 8,
+                ("Up", "Left"): 23,
+                ("Up", "Right"): 27
+            },
+            "Down":{
+                ("Down"): 2,
+                ("Down", "Right"): 25,
+                ("Down", "Left"): 29
+            }
+        }
+
+    def calc_overlay_asset(pipe, allPipes):
+        connections = pipe.get_connections(allPipes)
+        
 
     def get_connections(pipe, allPipes):
         connections = []
@@ -35,14 +60,20 @@ class PipeClass:
 
         pipe.image = pipe.Sprites.get(tileID, pipe.Sprites.get(1))
 
-    def draw_pipe(pipe, screen, camX, camY, TILE_SIZE):
+    def draw_pipe(pipe, screen, camX, camY, TILE_SIZE, overlay=False):
         drawX = pipe.x * TILE_SIZE - camX
         drawY = pipe.y * TILE_SIZE - camY
-        if pipe.image:
+        if overlay:
+            pipe.calc_overlay_asset({})
+            pipe.image.set_alpha(120)
             screen.blit(pipe.image, (drawX, drawY))
         else:
-            pipe.pick_asset({})
-            screen.blit(pipe.image, (drawX, drawY))
+            pipe.image.set_alpha(255)
+            if pipe.image:
+                screen.blit(pipe.image, (drawX, drawY))
+            else:
+                pipe.pick_asset({})
+                screen.blit(pipe.image, (drawX, drawY))
 
 
 

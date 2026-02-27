@@ -170,20 +170,20 @@ class MapClass:
 #====================================================================================================#
 
 
-    def draw_overlay(map, mouseTileX, mouseTileY, isInCore, screen, selectedBuilding):
+    def draw_overlay(map, mousePosition, mouseTileX, mouseTileY, isInCore, screen, selectedBuilding):
         overlayX = mouseTileX * map.TILE_SIZE - map.x
         overlayY = mouseTileY * map.TILE_SIZE - map.y
 
         overlaySurf = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE), pygame.SRCALPHA)
-        overlayColor = (255, 50, 50, 120) if isInCore else (255, 255, 255, 120)
+        overlayColor = (255, 50, 50, 120) if isInCore else (50, 255, 50, 120)
         
-        overlaySurf.fill(overlayColor)
+        pygame.draw.rect(overlaySurf, overlayColor, (0, 0, map.TILE_SIZE, map.TILE_SIZE), 2)
         screen.blit(overlaySurf, (overlayX, overlayY))
         if selectedBuilding == "Pipe":
             pipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
             pipe.pick_asset(map.Pipes)
-            pipe.draw_pipe(screen, map.x, map.y, map.TILE_SIZE)
-            map.draw_arrow(screen, overlayX, overlayY, map.direction)
+            pipe.draw_pipe(screen, map.x, map.y, map.TILE_SIZE, overlay=True)
+
         elif selectedBuilding == "Block":
             pass
 
@@ -260,7 +260,7 @@ class MapClass:
 
 
         if interactionMode == "Building" and selectedSlot is not None:
-            map.draw_overlay(mouseTileX, mouseTileY, isInCore, screen, hotbar[selectedSlot])
+            map.draw_overlay(mousePosition, mouseTileX, mouseTileY, isInCore, screen, hotbar[selectedSlot])
 
 
         
