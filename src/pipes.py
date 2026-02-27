@@ -1,23 +1,23 @@
 import pygame
 
 class PipeClass:
-    def __init__(self, x, y, direction, Sprites):
-        self.x = x
-        self.y = y
-        self.direction = direction
-        self.Sprites = Sprites
-        self.startDirection = None
-        self.endDirection = direction
-        self.image = None
-        self.pick_asset({})
+    def __init__(pipe, x, y, direction, Sprites):
+        pipe.x = x
+        pipe.y = y
+        pipe.direction = direction
+        pipe.Sprites = Sprites
+        pipe.startDirection = None
+        pipe.endDirection = direction
+        pipe.image = None
+        pipe.pick_asset({})
 
-    def get_connections(self, allPipes):
+    def get_connections(pipe, allPipes):
         connections = []
         check = {
-            "Up": (self.x, self.y - 1),
-            "Down": (self.x, self.y + 1),
-            "Left": (self.x - 1, self.y),
-            "Right": (self.x + 1, self.y)
+            "Up": (pipe.x, pipe.y - 1),
+            "Down": (pipe.x, pipe.y + 1),
+            "Left": (pipe.x - 1, pipe.y),
+            "Right": (pipe.x + 1, pipe.y)
         }
         
         for direction, coords in check.items():
@@ -25,25 +25,24 @@ class PipeClass:
                 connections.append(direction)
         return connections
         
-    def pick_asset(self, allPipes):
-        connections = self.get_connections(allPipes)
+    def pick_asset(pipe, allPipes):
+        connections = pipe.get_connections(allPipes)
         
         binary = {"Right": 1, "Down": 2, "Left": 4, "Up": 8}
         tileID = sum(binary[d] for d in connections)
         if tileID == 0:
-            tileID = binary.get(self.direction, 1)
+            tileID = binary.get(pipe.direction, 1)
 
-        self.image = self.Sprites.get(tileID, self.Sprites.get(1))
+        pipe.image = pipe.Sprites.get(tileID, pipe.Sprites.get(1))
 
-    def draw_pipe(self, screen, camX, camY, TILE_SIZE):
-        drawX = self.x * TILE_SIZE - camX
-        drawY = self.y * TILE_SIZE - camY
-        if self.image:
-            screen.blit(self.image, (drawX, drawY))
-
-
-
-
+    def draw_pipe(pipe, screen, camX, camY, TILE_SIZE):
+        drawX = pipe.x * TILE_SIZE - camX
+        drawY = pipe.y * TILE_SIZE - camY
+        if pipe.image:
+            screen.blit(pipe.image, (drawX, drawY))
+        else:
+            pipe.pick_asset({})
+            screen.blit(pipe.image, (drawX, drawY))
 
 
 

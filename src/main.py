@@ -23,6 +23,7 @@ class GameClass:
         self.isDeleting = False
         
 
+
     def update(self):
         pressed_keys = pygame.key.get_pressed()
         mousePosition = pygame.mouse.get_pos()
@@ -87,6 +88,8 @@ class GameClass:
             if type(building) is MinerClass:
                 building.update_mine()
         self.map.move_player(pressed_keys)
+
+
 
     def draw(self):
         startScreenX = self.map.x // self.map.TILE_SIZE

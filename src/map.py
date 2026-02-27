@@ -58,9 +58,18 @@ class MapClass:
         map.update_font_size()
         map.compute_ressources_position(5)
 
+
+#====================================================================================================#
+
+
+
     def update_font_size(map):
         fontSize = int(map.TILE_SIZE * 0.8)
         map.coreTextFont = pygame.font.SysFont("Consolas", fontSize, bold=True)
+
+
+#====================================================================================================#
+
 
     def compute_ressources_position(map, amountPerColor):
         map.Colors = [(250, 48, 48), # Red
@@ -80,6 +89,10 @@ class MapClass:
                         if random.random() > 0.1:
                             map.ColorPatches[(spawnX + x, spawnY + y)] = color
 
+
+#====================================================================================================#
+
+
     def zoom_assets(map):
         for i, originalImg in map.OriginalPipeSprites.items():
             map.PipeSprites[i] = pygame.transform.scale(originalImg, (map.TILE_SIZE, map.TILE_SIZE))
@@ -87,6 +100,10 @@ class MapClass:
         for pipe in map.Pipes.values():
             pipe.Sprites = map.PipeSprites
             pipe.pick_asset(map.Pipes)
+
+
+#====================================================================================================#
+
 
     def remove_building(map):
         mousePosition = pygame.mouse.get_pos()
@@ -102,6 +119,10 @@ class MapClass:
                     map.Pipes[coordinates].pick_asset(map.Pipes)
         elif mouseTile in map.SurfaceCache:
             del map.SurfaceCache[mouseTile]
+
+
+#====================================================================================================#
+
 
     def move_player(map, keys):
         nerf = 1
@@ -121,6 +142,9 @@ class MapClass:
                 map.y += map.PLAYER_SPEED * nerf * (2 if keys[pygame.K_LSHIFT] else 1)
                 
             map.x, map.y = round(map.x), round(map.y)
+
+
+#====================================================================================================#
 
 
     def draw_core(map, screen):
@@ -143,11 +167,38 @@ class MapClass:
             screen.blit(levelText, textRect)
 
 
+#====================================================================================================#
+
+
+    def draw_overlay(map, mouseTileX, mouseTileY, isInCore, screen, selectedBuilding):
+        overlayX = mouseTileX * map.TILE_SIZE - map.x
+        overlayY = mouseTileY * map.TILE_SIZE - map.y
+
+        overlaySurf = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE), pygame.SRCALPHA)
+        overlayColor = (255, 50, 50, 120) if isInCore else (255, 255, 255, 120)
+        
+        overlaySurf.fill(overlayColor)
+        screen.blit(overlaySurf, (overlayX, overlayY))
+        if selectedBuilding == "Pipe":
+            pipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
+            pipe.pick_asset(map.Pipes)
+            pipe.draw_pipe(screen, map.x, map.y, map.TILE_SIZE)
+            map.draw_arrow(screen, overlayX, overlayY, map.direction)
+        elif selectedBuilding == "Block":
+            pass
+
+
+#====================================================================================================#
+
+
     def draw_arrow(map, screen, drawX, drawY, direction):
-        directions = {"Right":0, "Up":1, "Left":2, "Down":3}
+        directions = {"Up":0, "Left":1, "Down":2, "Right":3}
         arrow = pygame.transform.scale(map.arrowSprite, (map.TILE_SIZE, map.TILE_SIZE))
         arrow = pygame.transform.rotate(arrow, 90*directions[direction])
         screen.blit(arrow, (drawX, drawY, map.TILE_SIZE, map.TILE_SIZE))
+
+
+#====================================================================================================#
 
 
     def draw_map(map, screen, selectedSlot, hotbar, interactionMode):
@@ -209,16 +260,8 @@ class MapClass:
 
 
         if interactionMode == "Building" and selectedSlot is not None:
-            overlayX = mouseTileX * map.TILE_SIZE - map.x
-            overlayY = mouseTileY * map.TILE_SIZE - map.y
+            map.draw_overlay(mouseTileX, mouseTileY, isInCore, screen, hotbar[selectedSlot])
 
-            overlaySurf = pygame.Surface((map.TILE_SIZE, map.TILE_SIZE), pygame.SRCALPHA)
-            overlayColor = (255, 50, 50, 120) if isInCore else (255, 255, 255, 120)
-            
-            overlaySurf.fill(overlayColor)
-            screen.blit(overlaySurf, (overlayX, overlayY))
-
-            map.draw_arrow(screen, overlayX, overlayY, map.direction)
 
         
 
