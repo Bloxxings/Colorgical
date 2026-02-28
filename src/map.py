@@ -54,6 +54,13 @@ class MapClass:
                 originalImg = pygame.image.load(p_path).convert_alpha()
                 map.OriginalPipeSprites[i] = originalImg
 
+        map.MinerSprites = {}
+        for i in range(16):
+            m_path = os.path.join(map.assets_path, "miners", f"miner{i}.png")
+            if os.path.exists(m_path):
+                originalImg = pygame.image.load(m_path).convert_alpha()
+                map.MinerSprites[i] = originalImg
+
         map.zoom_assets()
         map.update_font_size()
         map.compute_ressources_position(5)
@@ -230,9 +237,7 @@ class MapClass:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
 
                     if type(buildingType) is MinerClass:
-                        centerX = drawX + map.TILE_SIZE // 2
-                        centerY = drawY + map.TILE_SIZE // 2
-                        pygame.draw.circle(screen, (255, 127, 0), (centerX, centerY), map.TILE_SIZE // 3)
+                        buildingType.draw_miner(screen)
 
         map.draw_core(screen)
 
@@ -244,7 +249,7 @@ class MapClass:
             
             if item == "Miner":
                 if (mouseTileX, mouseTileY) in map.ColorPatches:
-                    map.SurfaceCache[(mouseTileX, mouseTileY)] = MinerClass(mouseTileX, mouseTileY, map.ColorPatches)
+                    map.SurfaceCache[(mouseTileX, mouseTileY)] = MinerClass(mouseTileX, mouseTileY, map.MinerSprites)
 
             elif item == "Pipe":
                 if (mouseTileX, mouseTileY) not in map.Pipes:

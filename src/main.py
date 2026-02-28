@@ -84,9 +84,9 @@ class GameClass:
 
         if self.isDeleting:
             self.map.remove_building()
+
         for building in self.map.SurfaceCache.values():
-            if type(building) is MinerClass:
-                building.update_mine()
+            pass
         self.map.move_player(pressed_keys)
 
 
@@ -104,9 +104,7 @@ class GameClass:
                 pipe.draw_pipe(self.screen, self.map.x, self.map.y, self.map.TILE_SIZE)
 
         for building in self.map.SurfaceCache.values():
-            if type(building) is MinerClass:
-                building.draw_outputs(self.screen,self.map)
-        
+            pass
         # UI 
         self.draw_fps()
         self.draw_coords()

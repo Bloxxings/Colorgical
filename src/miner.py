@@ -1,17 +1,27 @@
 import pygame
 
 class MinerClass:
-    def __init__(miner,x,y,colorPatches):
+    def __init__(miner,x,y, MinerSprites):
         miner.x = x
         miner.y = y
-        miner.color = colorPatches[(x,y)]
-        miner.storage = []
-        miner.mineCooldown = 60
-        miner.outputcooldown = 30
-        miner.output = [miner.x+1,miner.y]
-        miner.outputs = []
+        miner.Sprites = MinerSprites
+    
+    
+    def draw_miner(miner, screen):
+        screen.blit(miner.Sprites[0], (miner.x, miner.y))
 
-    def update_mine(miner):
+
+
+
+
+
+
+
+
+
+""" Do we really keep this ?
+
+def update_mine(miner):
         miner.mine()
         miner.empty_storage()
 
@@ -33,3 +43,5 @@ class MinerClass:
             drawX = (miner.output[0]+i) * map.TILE_SIZE - map.x + map.TILE_SIZE // 4
             drawY = miner.output[1] * map.TILE_SIZE - map.y + map.TILE_SIZE // 4
             pygame.draw.rect(screen,miner.outputs[i],(drawX,drawY,map.TILE_SIZE//2,map.TILE_SIZE//2))
+
+"""
