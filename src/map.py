@@ -54,6 +54,7 @@ class MapClass:
                 originalImg = pygame.image.load(p_path).convert_alpha()
                 map.OriginalPipeSprites[i] = originalImg
 
+        map.Miners = {}
         map.MinerSprites = {}
         for i in range(16):
             m_path = os.path.join(map.assets_path, "miners", f"miner{i}.png")
@@ -107,6 +108,13 @@ class MapClass:
         for pipe in map.Pipes.values():
             pipe.Sprites = map.PipeSprites
             pipe.pick_asset(map.Pipes)
+
+        for i, originalImg in map.MinerSprites.items():
+            map.MinerSprites[i] = pygame.transform.scale(originalImg, (map.TILE_SIZE, map.TILE_SIZE))
+            
+        for miner in map.Miners.values():
+            miner.Sprites = map.MinerSprites
+            miner.pick_asset(map.Miners)
 
 
 #====================================================================================================#
@@ -190,8 +198,9 @@ class MapClass:
             pipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
             pipe.draw_pipe(screen, map.x, map.y, map.TILE_SIZE, map.Pipes, overlay=True)
 
-        elif selectedBuilding == "Block":
-            pass
+        elif selectedBuilding == "Miner":
+            miner = MinerClass(mouseTileX, mouseTileY, map.direction, map.MinerSprites)
+            miner.draw_miner(screen, map.x, map.y, map.TILE_SIZE, map.Miners, overlay=True)
 
 
 #====================================================================================================#
@@ -237,7 +246,7 @@ class MapClass:
                     buildingType = map.SurfaceCache[(tileX, tileY)]
 
                     if type(buildingType) is MinerClass:
-                        buildingType.draw_miner(screen)
+                        buildingType.draw_miner(screen, map.x, map.y, map.TILE_SIZE, map.Miners)
 
         map.draw_core(screen)
 
@@ -248,21 +257,26 @@ class MapClass:
             item = hotbar[selectedSlot]
             
             if item == "Miner":
-                if (mouseTileX, mouseTileY) in map.ColorPatches:
-                    map.SurfaceCache[(mouseTileX, mouseTileY)] = MinerClass(mouseTileX, mouseTileY, map.MinerSprites)
+                if (mouseTileX, mouseTileY) in map.ColorPatches and (mouseTileX, mouseTileY) not in map.SurfaceCache:
+                    newMiner = MinerClass(mouseTileX, mouseTileY, map.direction, map.MinerSprites)
+                    map.SurfaceCache[(mouseTileX, mouseTileY)] = newMiner
+
+                    for neighbourX in range(-1, 2):
+                        for neighbourY in range(-1, 2):
+                            target = (mouseTileX + neighbourX, mouseTileY + neighbourY)
+                            if target in map.Miners:
+                                map.Miners[target].pick_asset(map.Miners)
 
             elif item == "Pipe":
                 if (mouseTileX, mouseTileY) not in map.Pipes:
-                    new_pipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
-                    map.Pipes[(mouseTileX, mouseTileY)] = new_pipe
+                    newPipe = PipeClass(mouseTileX, mouseTileY, map.direction, map.PipeSprites)
+                    map.Pipes[(mouseTileX, mouseTileY)] = newPipe
 
                     for neighbourX in range(-1, 2):
                         for neighbourY in range(-1, 2):
                             target = (mouseTileX + neighbourX, mouseTileY + neighbourY)
                             if target in map.Pipes:
                                 map.Pipes[target].pick_asset(map.Pipes)
-            else:
-                map.SurfaceCache[(mouseTileX, mouseTileY)] = item
 
 
         if interactionMode == "Building" and selectedSlot is not None:
