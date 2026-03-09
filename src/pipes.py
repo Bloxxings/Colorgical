@@ -4,6 +4,7 @@ class PipeClass:
     def __init__(pipe, x, y, direction, Sprites):
         pipe.x = x
         pipe.y = y
+        pipe.carried_object = None
         pipe.direction = direction
         pipe.Sprites = Sprites
         pipe.image = None
@@ -33,7 +34,7 @@ class PipeClass:
         else:
             neighbour = connections[0]
             
-            assetID = pipe.binary[neighbour] + pipe.binary[pipe.direction]
+            assetID = pipe.binary[neighbour]
             
             assets = {
                 5: 5,
@@ -53,12 +54,7 @@ class PipeClass:
         
         if tileID == 0:
             tileID = pipe.binary.get(pipe.direction, 1)
-
-        if tileID in pipe.Crossings:
-            return 
-        else:
-            pipe.image = pipe.Sprites.get(tileID, pipe.Sprites.get(1))
-
+        pipe.image = pipe.Sprites.get(tileID, pipe.Sprites.get(1))
     def draw_pipe(pipe, screen, camX, camY, TILE_SIZE, allPipes=None, overlay=False):
         drawX = pipe.x * TILE_SIZE - camX
         drawY = pipe.y * TILE_SIZE - camY
