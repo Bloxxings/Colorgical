@@ -13,7 +13,7 @@ class GameClass:
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = self.screen.get_size()
 
         self.font = pygame.font.SysFont("Consolas", 24, bold=True)
-        
+
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Gardening nightmares")
         self.running = True
@@ -21,7 +21,7 @@ class GameClass:
         self.map = MapClass(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
         self.buildings = BuildingsClass()
         self.isDeleting = False
-        
+
 
     def update(self):
         pressed_keys = pygame.key.get_pressed()
@@ -38,7 +38,7 @@ class GameClass:
                         self.map.mousePositionOnLastFrame = mousePosition
                     elif self.buildings.currentInteractionMode == "Building":
                         self.map.placeBuilding = True
-            
+
 
                 if event.button == 3:
                     self.isDeleting = True
@@ -63,7 +63,7 @@ class GameClass:
                 if self.map.isCurrentlyDraging and self.buildings.currentInteractionMode == "Moving":
                     mouseDifferenceX = mousePosition[0] - self.map.mousePositionOnLastFrame[0]
                     mouseDifferenceY = mousePosition[1] - self.map.mousePositionOnLastFrame[1]
-                
+
                     self.map.x -= mouseDifferenceX
                     self.map.y -= mouseDifferenceY
                     self.map.mousePositionOnLastFrame = mousePosition
@@ -101,8 +101,8 @@ class GameClass:
         for building in self.map.SurfaceCache.values():
             if type(building) is MinerClass:
                 building.draw_outputs(self.screen,self.map)
-        
-        # UI 
+
+        # UI
         self.draw_fps()
         self.draw_coords()
         self.buildings.draw_building_bar(self.screen,self.map.everyBuilding)
@@ -111,15 +111,13 @@ class GameClass:
         fps_val = int(self.clock.get_fps())
         fps_surface = self.font.render(f"FPS: {fps_val}", True, (255, 255, 255))
         self.screen.blit(fps_surface, (20, 20))
-        
+
     def draw_coords(self):
         # Draw coordinates
         x = (self.map.x + self.SCREEN_WIDTH//2) // self.map.TILE_SIZE
         y = (self.map.y + self.SCREEN_HEIGHT//2) // self.map.TILE_SIZE
-        coordinatesText = self.font.render(f"X:{pygame.mouse.get_pos()[0] if self.coordsMouseMode else \
-                                          x} Y:{pygame.mouse.get_pos()[1] if self.coordsMouseMode else y}",
-                                          True,(225,225,225), (20, 20, 20))
-        
+        coordinatesText = self.font.render(f"X:{pygame.mouse.get_pos()[0] if self.coordsMouseMode else x} Y:{pygame.mouse.get_pos()[1] if self.coordsMouseMode else y}", True,(225,225,225), (20, 20, 20))
+
         self.screen.blit(coordinatesText,(20, 70))
         mode = "Mouse coordinates" if self.coordsMouseMode else "Map coordinates"
         modeText = self.font.render(mode,True,(252, 215, 180))
